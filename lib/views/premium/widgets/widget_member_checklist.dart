@@ -26,6 +26,7 @@ class _MemberChecklistState extends State<MemberChecklist> {
   String checkListId;
 
   void _getdata() async {
+    print('hello');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 

@@ -24,7 +24,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   /// App title.
-  static const String _TITLE = 'FIT WITH';
+  static const String _TITLE = 'FITWITH';
 
   /// App default font.
   static const String _DEFAULT_FONT = 'SpoqaHanSansNeo';

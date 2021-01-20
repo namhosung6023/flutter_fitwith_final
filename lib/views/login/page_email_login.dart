@@ -35,8 +35,8 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
         data: { "email": email, "password": hashedPassword});
     print(response.data['accesstoken']);
     prefs.setString('token', response.data['accesstoken']);
-    // CommonUtils.movePage(context, RootPage(CommonUtils.TYPE_MEMBER));
-    CommonUtils.movePage(context, PremiumMemberPage());
+    CommonUtils.movePage(context, RootPage(CommonUtils.TYPE_MEMBER));
+    // CommonUtils.movePage(context, PremiumMemberPage());
   }
 
   Size _deviceSize;
