@@ -36,7 +36,7 @@ class _MemberChecklistState extends State<MemberChecklist> {
     Dio dio = new Dio();
     dio.options.headers["accesstoken"] = "$token";
     Response response =
-    await dio.get('http://10.0.2.2:3000/premium/checklist/user/$userId');
+    await dio.get('http://172.16.3.181:3000/premium/checklist/user/$userId');
     print(response.data['checklist'][0]);
     setState(() {
       if(response.data['checklist'].length > 0){

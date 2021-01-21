@@ -42,6 +42,10 @@ dependencies:
   # following page : https://pub.dev/packages/table_calendar
   table_calendar: ^2.3.3
 
+  mime_type: ^0.3.2
+
+  http_parser: ^3.1.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

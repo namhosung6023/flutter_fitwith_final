@@ -2,7 +2,15 @@ import 'dart:io';
 import 'package:fitwith/utils/utils_common.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'dart:convert';
+import 'package:mime_type/mime_type.dart';
+
+
 
 class MemberDiary extends StatefulWidget {
   @override
@@ -11,15 +19,42 @@ class MemberDiary extends StatefulWidget {
 
 class _MemberDiaryState extends State<MemberDiary> {
 
-  File _image;
-  final picker = ImagePicker();
+  final String endPoint = 'http://10.0.2.2:3000/file/upload';
 
-  Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+  void _upload(File file) async {
+    String fileName = file.path.split('/').last;
+    String mimeType = mime(fileName);
+    String mimee = mimeType.split('/')[0];
+    String type = mimeType.split('/')[1];
+
+    FormData formData = FormData.fromMap({
+      "file": await MultipartFile.fromFile(
+        file.path,
+        filename: fileName,
+          contentType: MediaType(mimee, type)
+      ),
+    });
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    Dio dio = new Dio();
+    dio.options.headers["accesstoken"] = "$token";
+    Response response = await dio.post(endPoint, data: formData);
+    print(response.data.path);
+  }
+
+  File _image;
+  final file = ImagePicker();
+
+  Future galleryImage() async {
+    final pickedFile = await file.getImage(source: ImageSource.gallery);
 
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
+        _upload(_image);
+        // CupertinoActionSheet 없게 하기
       } else {
         return Image.file(_image);
       }
@@ -27,16 +62,19 @@ class _MemberDiaryState extends State<MemberDiary> {
   }
 
   Future cameraImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    final pickedFile = await file.getImage(source: ImageSource.camera);
 
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
+        _upload(_image);
+        // CupertinoActionSheet 없게 하기
       } else {
         return Image.file(_image);
       }
     });
   }
+
 
   /// Dropdown button value;
   int _value = 0;
@@ -206,7 +244,6 @@ class _MemberDiaryState extends State<MemberDiary> {
       ),
       ),
       onTap: () {
-        // getImage();
         final action = CupertinoActionSheet(
           message: Text(
             "사진 업로드",
@@ -217,7 +254,8 @@ class _MemberDiaryState extends State<MemberDiary> {
               child: Text("갤러리",style: TextStyle(fontWeight: FontWeight.normal),),
               isDefaultAction: true,
               onPressed: () {
-                getImage();
+                galleryImage();
+                // Navigator.of(context).pop();
               },
             ),
             CupertinoActionSheetAction(
