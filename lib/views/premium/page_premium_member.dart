@@ -16,7 +16,7 @@ class _PremiumMemberPageState extends State<PremiumMemberPage> with SingleTicker
 
   /// 캘린더 컨트롤러.
   final _calendarCtrl = CalendarController();
-  var _selectedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now();
   // DateTime _selectedDay;
 
   /// tab widget controller.
@@ -46,8 +46,8 @@ class _PremiumMemberPageState extends State<PremiumMemberPage> with SingleTicker
             child: TabBarView(
               controller: this._tabCtrl,
               children: [
-                MemberChecklist(),
-                MemberDiary(),
+                MemberChecklist(selectedDay: _selectedDay,),
+                MemberDiary(selectedDay: _selectedDay,),
               ],
             ),
           ),

@@ -8,8 +8,8 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MemberChecklist extends StatefulWidget {
-  // MemberChecklist({Key key, this.selectedDay}) : super(key: key);
-  // DateTime selectedDay;
+  MemberChecklist({Key key, this.selectedDay}) : super(key: key);
+  final DateTime selectedDay;
   @override
   _MemberChecklistState createState() => _MemberChecklistState();
 }
@@ -26,7 +26,6 @@ class _MemberChecklistState extends State<MemberChecklist> {
   String checkListId;
 
   void _getdata() async {
-    print('hello');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
@@ -36,14 +35,16 @@ class _MemberChecklistState extends State<MemberChecklist> {
     Dio dio = new Dio();
     dio.options.headers["accesstoken"] = "$token";
     Response response =
-    await dio.get('http://172.16.3.181:3000/premium/checklist/user/$userId');
-    print(response.data['checklist'][0]);
+    await dio.get('http://10.0.2.2:3000/premium/checklist/user/$userId', queryParameters: {
+      "date": widget.selectedDay
+    });
+    // print(response.data['checklist'].length);
     setState(() {
       if(response.data['checklist'].length > 0){
         for (int i = 0; i < response.data['checklist'][0]['userComment'].length; i++) {
-          print('hi');
+          // print('hi');
           commentList.add(response.data['checklist'][0]['userComment'][i].toString());
-          print(commentList);
+          // print(commentList);
 
         }
         trainerComment = response.data['checklist'][0]['trainerComment'];
@@ -58,12 +59,19 @@ class _MemberChecklistState extends State<MemberChecklist> {
               workoutList[i]['isEditable']);
           checkList.add(workout);
         }
+      }else{
+        setState(() {
+          checkList = [];
+          _member.checklist = [];
+          commentList = [];
+          _member.commentList = [];
+          trainerComment = "";
+        });
       }
     });
   }
 
   void _putCheckboxData(bool isChecked, Checklist checklist) async {
-    print('hello');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
@@ -111,6 +119,11 @@ class _MemberChecklistState extends State<MemberChecklist> {
     CommonUtils.setKeyboardListener(context);
     super.initState();
     _getdata();
+  }
+  @override
+  void didUpdateWidget(covariant MemberChecklist oldWidget) {
+    _getdata();
+    super.didUpdateWidget(oldWidget);
   }
 
   @override

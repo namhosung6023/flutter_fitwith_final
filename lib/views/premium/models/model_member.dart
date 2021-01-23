@@ -21,9 +21,9 @@ class Member {
   String url = 'assets/img_sample.png';
 
   /// 체크리스트.
-  final List<Checklist> checklist = [];
+  List<Checklist> checklist = [];
 
-  final List<String> commentList = [];
+  List<String> commentList = [];
 
   Member(this.name, this.gender, this.age);
 }

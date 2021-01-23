@@ -13,6 +13,9 @@ import 'package:mime_type/mime_type.dart';
 
 
 class MemberDiary extends StatefulWidget {
+  MemberDiary({Key key, this.selectedDay}) : super(key: key);
+  final DateTime selectedDay;
+
   @override
   _MemberDiaryState createState() => _MemberDiaryState();
 }
@@ -20,17 +23,50 @@ class MemberDiary extends StatefulWidget {
 class _MemberDiaryState extends State<MemberDiary> {
 
   final String endPoint = 'http://10.0.2.2:3000/file/upload';
+  String emptyImage = '';
+  String beforeSleepImage = '';
+  String dietImage = '';
+  String userId;
+
+  void _getdata() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    userId = decodedToken['_id'];
+
+    Dio dio = new Dio();
+    dio.options.headers["accesstoken"] = "$token";
+    Response response =
+    await dio.get('http://10.0.2.2:3000/file/diary/user/$userId', queryParameters: {
+      "date": widget.selectedDay
+    });
+    print('response: $response');
+    setState(() {
+      if(response.data['bodyLog'].length > 0){
+        emptyImage = response.data['bodyLog'][0]['morningBody'][0];
+      }else{
+        setState(() {
+          emptyImage = '';
+          beforeSleepImage = '';
+          dietImage = '';
+        });
+      }
+    });
+  }
 
   void _upload(File file) async {
-    String fileName = file.path.split('/').last;
+    String fileName = file.path
+        .split('/')
+        .last;
     String mimeType = mime(fileName);
     String mimee = mimeType.split('/')[0];
     String type = mimeType.split('/')[1];
 
     FormData formData = FormData.fromMap({
       "file": await MultipartFile.fromFile(
-        file.path,
-        filename: fileName,
+          file.path,
+          filename: fileName,
           contentType: MediaType(mimee, type)
       ),
     });
@@ -38,10 +74,13 @@ class _MemberDiaryState extends State<MemberDiary> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
-    Dio dio = new Dio();
-    dio.options.headers["accesstoken"] = "$token";
-    Response response = await dio.post(endPoint, data: formData);
-    print(response.data.path);
+
+      Dio dio = new Dio();
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      userId = decodedToken['_id'];
+      dio.options.headers["accesstoken"] = "$token";
+      Response response = await dio.post(endPoint, data: formData);
+      print(response.data.path);
   }
 
   File _image;
@@ -84,6 +123,12 @@ class _MemberDiaryState extends State<MemberDiary> {
   void initState() {
     CommonUtils.setKeyboardListener(context);
     super.initState();
+    _getdata();
+  }
+  @override
+  void didUpdateWidget(covariant MemberDiary oldWidget) {
+    _getdata();
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -112,7 +157,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 24.0),
         _buildWeight(),
         const SizedBox(height: 16.0),
-        _buildUploadImages(),
+        _buildUploadImages(emptyImage),
         const SizedBox(height: 24.0),
       ],
     );
@@ -127,7 +172,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 24.0),
         _buildWeight(),
         const SizedBox(height: 16.0),
-        _buildUploadImages(),
+        _buildUploadImages(beforeSleepImage),
         const SizedBox(height: 24.0),
       ],
     );
@@ -171,7 +216,7 @@ class _MemberDiaryState extends State<MemberDiary> {
           ),
         ),
         const SizedBox(height: 8.0),
-        _buildUploadImages(),
+        _buildUploadImages(dietImage),
         const SizedBox(height: 16.0),
         Row(
           children: [
@@ -232,12 +277,14 @@ class _MemberDiaryState extends State<MemberDiary> {
   }
 
   /// 이미지 업로드 영역 빌드.
-  Widget _buildUploadImages() {
+  Widget _buildUploadImages(String imageUrl) {
     return InkWell(
       child: Container(
       width: double.infinity,
       height: 160.0,
-      child : Icon(Icons.upgrade, color: Colors.white, size: 48.0),
+      child : imageUrl == '' ? Icon(Icons.upgrade, color: Colors.white, size: 48.0) : ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+          child: Image.network(imageUrl, fit: BoxFit.fill,)),
       decoration: BoxDecoration(
         color: Color(0xffE8EAEF),
         borderRadius: BorderRadius.circular(8.0),
