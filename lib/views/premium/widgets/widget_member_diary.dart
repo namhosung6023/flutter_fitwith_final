@@ -23,10 +23,11 @@ class MemberDiary extends StatefulWidget {
 class _MemberDiaryState extends State<MemberDiary> {
 
   final String endPoint = 'http://10.0.2.2:3000/file/upload';
-  String emptyImage = '';
-  String beforeSleepImage = '';
-  String dietImage = '';
+  String morningBody = '';
+  String nightBody = '';
+  String morningFood = '';
   String userId;
+  Map<String, dynamic> bodyLog;
 
   void _getdata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -41,21 +42,25 @@ class _MemberDiaryState extends State<MemberDiary> {
     await dio.get('http://10.0.2.2:3000/file/diary/user/$userId', queryParameters: {
       "date": widget.selectedDay
     });
-    print('response: $response');
+    bodyLog = response.data['bodyLog'][0];
+    print(bodyLog.toString());
     setState(() {
       if(response.data['bodyLog'].length > 0){
-        emptyImage = response.data['bodyLog'][0]['morningBody'][0];
+        morningBody = response.data['bodyLog'][0]['morningBody'][0];
+        nightBody = response.data['bodyLog'][0]['nightBody'];
+        morningFood = response.data['bodyLog'][0]['morningFood'];
+
       }else{
         setState(() {
-          emptyImage = '';
-          beforeSleepImage = '';
-          dietImage = '';
+          morningBody = '';
+          nightBody = '';
+          morningFood = '';
         });
       }
     });
   }
 
-  void _upload(File file) async {
+  void _upload(File file, int pictureNumber) async {
     String fileName = file.path
         .split('/')
         .last;
@@ -69,6 +74,8 @@ class _MemberDiaryState extends State<MemberDiary> {
           filename: fileName,
           contentType: MediaType(mimee, type)
       ),
+      "pictureNumber": pictureNumber,
+      "date" : widget.selectedDay,
     });
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -86,13 +93,13 @@ class _MemberDiaryState extends State<MemberDiary> {
   File _image;
   final file = ImagePicker();
 
-  Future galleryImage() async {
+  Future galleryImage(int pictureNumber) async {
     final pickedFile = await file.getImage(source: ImageSource.gallery);
 
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
-        _upload(_image);
+        _upload(_image, pictureNumber);
         // CupertinoActionSheet 없게 하기
       } else {
         return Image.file(_image);
@@ -100,13 +107,13 @@ class _MemberDiaryState extends State<MemberDiary> {
     });
   }
 
-  Future cameraImage() async {
+  Future cameraImage(int pictureNumber) async {
     final pickedFile = await file.getImage(source: ImageSource.camera);
 
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
-        _upload(_image);
+        _upload(_image, pictureNumber);
         // CupertinoActionSheet 없게 하기
       } else {
         return Image.file(_image);
@@ -124,6 +131,7 @@ class _MemberDiaryState extends State<MemberDiary> {
     CommonUtils.setKeyboardListener(context);
     super.initState();
     _getdata();
+    // _upload(_image);
   }
   @override
   void didUpdateWidget(covariant MemberDiary oldWidget) {
@@ -157,7 +165,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 24.0),
         _buildWeight(),
         const SizedBox(height: 16.0),
-        _buildUploadImages(emptyImage),
+        _buildUploadImages(morningBody, 0),
         const SizedBox(height: 24.0),
       ],
     );
@@ -172,7 +180,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 24.0),
         _buildWeight(),
         const SizedBox(height: 16.0),
-        _buildUploadImages(beforeSleepImage),
+        _buildUploadImages(nightBody, 1),
         const SizedBox(height: 24.0),
       ],
     );
@@ -216,7 +224,9 @@ class _MemberDiaryState extends State<MemberDiary> {
           ),
         ),
         const SizedBox(height: 8.0),
-        _buildUploadImages(dietImage),
+        if (_value == 0) _buildUploadImages(morningFood, 2)
+        else if (_value == 1) _buildUploadImages(morningFood, 3)
+        else _buildUploadImages(morningFood, 4),
         const SizedBox(height: 16.0),
         Row(
           children: [
@@ -277,7 +287,7 @@ class _MemberDiaryState extends State<MemberDiary> {
   }
 
   /// 이미지 업로드 영역 빌드.
-  Widget _buildUploadImages(String imageUrl) {
+  Widget _buildUploadImages(String imageUrl, int pictureNumber) {
     return InkWell(
       child: Container(
       width: double.infinity,
@@ -301,7 +311,7 @@ class _MemberDiaryState extends State<MemberDiary> {
               child: Text("갤러리",style: TextStyle(fontWeight: FontWeight.normal),),
               isDefaultAction: true,
               onPressed: () {
-                galleryImage();
+                galleryImage(pictureNumber);
                 // Navigator.of(context).pop();
               },
             ),
@@ -309,7 +319,7 @@ class _MemberDiaryState extends State<MemberDiary> {
               child: Text("카메라",style: TextStyle(fontWeight: FontWeight.normal),),
               isDestructiveAction: true,
               onPressed: () {
-                cameraImage();
+                cameraImage(pictureNumber);
               },
             )
           ],

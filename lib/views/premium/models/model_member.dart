@@ -1,4 +1,5 @@
 import 'package:fitwith/views/premium/models/model_checklist.dart';
+import 'package:fitwith/views/premium/models/model_bodylog.dart';
 
 /// 회원.
 class Member {
@@ -24,6 +25,8 @@ class Member {
   List<Checklist> checklist = [];
 
   List<String> commentList = [];
+
+  List<BodyLog> bodyLog = [];
 
   Member(this.name, this.gender, this.age);
 }

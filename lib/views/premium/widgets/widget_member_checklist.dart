@@ -38,13 +38,10 @@ class _MemberChecklistState extends State<MemberChecklist> {
     await dio.get('http://10.0.2.2:3000/premium/checklist/user/$userId', queryParameters: {
       "date": widget.selectedDay
     });
-    // print(response.data['checklist'].length);
     setState(() {
       if(response.data['checklist'].length > 0){
         for (int i = 0; i < response.data['checklist'][0]['userComment'].length; i++) {
-          // print('hi');
           commentList.add(response.data['checklist'][0]['userComment'][i].toString());
-          // print(commentList);
 
         }
         trainerComment = response.data['checklist'][0]['trainerComment'];
