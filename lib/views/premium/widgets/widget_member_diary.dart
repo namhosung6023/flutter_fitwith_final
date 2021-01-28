@@ -42,19 +42,18 @@ class _MemberDiaryState extends State<MemberDiary> {
     await dio.get('http://10.0.2.2:3000/file/diary/user/$userId', queryParameters: {
       "date": widget.selectedDay
     });
-    bodyLog = response.data['bodyLog'][0];
-    print(bodyLog.toString());
+    bodyLog = response.data['bodyLog'];
     setState(() {
       if(response.data['bodyLog'].length > 0){
         morningBody = response.data['bodyLog'][0]['morningBody'][0];
-        nightBody = response.data['bodyLog'][0]['nightBody'];
-        morningFood = response.data['bodyLog'][0]['morningFood'];
+        // nightBody = response.data['bodyLog'][0]['nightBody'];
+        // morningFood = response.data['bodyLog'][0]['morningFood'];
 
       }else{
         setState(() {
           morningBody = '';
-          nightBody = '';
-          morningFood = '';
+          // nightBody = '';
+          // morningFood = '';
         });
       }
     });
@@ -311,15 +310,15 @@ class _MemberDiaryState extends State<MemberDiary> {
               child: Text("갤러리",style: TextStyle(fontWeight: FontWeight.normal),),
               isDefaultAction: true,
               onPressed: () {
-                galleryImage(pictureNumber);
-                // Navigator.of(context).pop();
+                Navigator.pop (context, galleryImage (pictureNumber));
+                // galleryImage(pictureNumber);
               },
             ),
             CupertinoActionSheetAction(
               child: Text("카메라",style: TextStyle(fontWeight: FontWeight.normal),),
               isDestructiveAction: true,
               onPressed: () {
-                cameraImage(pictureNumber);
+                cameraImage (pictureNumber);
               },
             )
           ],

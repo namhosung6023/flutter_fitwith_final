@@ -20,7 +20,7 @@ class _EmailSignUpPageState extends State<EmailSignUpPage> {
   String password = "";
   String email = "";
 
-  void _join() async {
+  void _signUp() async {
     if (_formKey.currentState.validate()) {
       Scaffold.of(_formKey.currentContext).showSnackBar(
           SnackBar(content: Text('처리중')));
@@ -39,7 +39,9 @@ class _EmailSignUpPageState extends State<EmailSignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    _deviceSize = MediaQuery.of(context).size;
+    _deviceSize = MediaQuery
+        .of(context)
+        .size;
 
     return WidgetUtils.buildScaffold(
       _buildBody(),
@@ -73,14 +75,14 @@ class _EmailSignUpPageState extends State<EmailSignUpPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildTextFormField(
-                '이름',
-                    (String value) {
-                  if (value.isEmpty) return '이름을 입력하세요.';
-                  name = value;
-                  return null;
-                },
-                false
-            ),
+                    '이름',
+                        (String value) {
+                      if (value.isEmpty) return '이름을 입력하세요.';
+                      name = value;
+                      return null;
+                    },
+                    false
+                ),
                 SizedBox(height: 10.0),
                 _buildTextFormField(
                     '이메일',
@@ -113,12 +115,14 @@ class _EmailSignUpPageState extends State<EmailSignUpPage> {
                     true
                 ),
                 SizedBox(height: 10.0),
-                _buildCheckboxListTile('개인정보 이용 동의', _agreementPrivacy, (bool value) {
+                _buildCheckboxListTile(
+                    '개인정보 이용 동의', _agreementPrivacy, (bool value) {
                   setState(() {
                     _agreementPrivacy = value;
                   });
                 }),
-                _buildCheckboxListTile('마케팅 활용 동의', _agreementMarketing, (bool value) {
+                _buildCheckboxListTile(
+                    '마케팅 활용 동의', _agreementMarketing, (bool value) {
                   setState(() {
                     _agreementMarketing = value;
                   });
@@ -172,7 +176,8 @@ class _EmailSignUpPageState extends State<EmailSignUpPage> {
   }
 
   /// Build text form field
-  TextFormField _buildTextFormField(String hintText, Function validator, bool isPassword) {
+  TextFormField _buildTextFormField(String hintText, Function validator,
+      bool isPassword) {
     return TextFormField(
       obscureText: isPassword,
       decoration: InputDecoration(
@@ -200,11 +205,5 @@ class _EmailSignUpPageState extends State<EmailSignUpPage> {
     );
   }
 
-  /// 회원가입
-  /// fixme :: 회원가입 처리
-  void _signUp() {
-    if (_formKey.currentState.validate()) {
-      print('회원가입');
-    }
-  }
+
 }
