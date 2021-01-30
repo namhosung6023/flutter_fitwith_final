@@ -60,6 +60,7 @@ class _MemberDiaryState extends State<MemberDiary> {
   }
 
   void _upload(File file, int pictureNumber) async {
+    print("업로드함수");
     String fileName = file.path
         .split('/')
         .last;
@@ -85,21 +86,22 @@ class _MemberDiaryState extends State<MemberDiary> {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
       userId = decodedToken['_id'];
       dio.options.headers["accesstoken"] = "$token";
-      Response response = await dio.post(endPoint, data: formData);
-      print(response.data.path);
+      Response response = await dio.post(endPoint, data: formData, queryParameters: {
+        "date": widget.selectedDay
+      });
   }
-
+  
   File _image;
   final file = ImagePicker();
 
   Future galleryImage(int pictureNumber) async {
     final pickedFile = await file.getImage(source: ImageSource.gallery);
+    print("pickedFile:${pickedFile.toString()}");
 
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
         _upload(_image, pictureNumber);
-        // CupertinoActionSheet 없게 하기
       } else {
         return Image.file(_image);
       }
@@ -113,7 +115,6 @@ class _MemberDiaryState extends State<MemberDiary> {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
         _upload(_image, pictureNumber);
-        // CupertinoActionSheet 없게 하기
       } else {
         return Image.file(_image);
       }
@@ -130,7 +131,6 @@ class _MemberDiaryState extends State<MemberDiary> {
     CommonUtils.setKeyboardListener(context);
     super.initState();
     _getdata();
-    // _upload(_image);
   }
   @override
   void didUpdateWidget(covariant MemberDiary oldWidget) {
@@ -300,32 +300,59 @@ class _MemberDiaryState extends State<MemberDiary> {
       ),
       ),
       onTap: () {
-        final action = CupertinoActionSheet(
-          message: Text(
-            "사진 업로드",
-            style: TextStyle(fontSize: 15.0),
-          ),
-          actions: <Widget>[
-            CupertinoActionSheetAction(
-              child: Text("갤러리",style: TextStyle(fontWeight: FontWeight.normal),),
-              isDefaultAction: true,
-              onPressed: () {
-                Navigator.pop (context, galleryImage (pictureNumber));
-                // galleryImage(pictureNumber);
-              },
+        showModalBottomSheet(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(30.0)),
             ),
-            CupertinoActionSheetAction(
-              child: Text("카메라",style: TextStyle(fontWeight: FontWeight.normal),),
-              isDestructiveAction: true,
-              onPressed: () {
-                cameraImage (pictureNumber);
-              },
+            backgroundColor: Colors.blue,
+            context: context, builder: ((builder) => bottomSheet()));
+      },
+    );
+  }
+
+///사진과 겔러리 선택 하단바
+  Widget bottomSheet() {
+    return Container(
+        height: 100,
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.symmetric(
+            horizontal: 30,
+            vertical: 30
+        ),
+
+        child: Column(
+          children: <Widget>[
+            Text(
+              '선택하세요',
+              style: TextStyle(
+                fontSize: 15,
+                  color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 10,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                FlatButton.icon(
+                  icon: Icon(Icons.camera_alt, size: 20, color: Colors.white,),
+                  onPressed: () {
+                    cameraImage(1);
+                    Navigator.pop(context);
+                  },
+                  label: Text('Camera', style: TextStyle(fontSize: 18, color: Colors.white), ),
+                ),
+                FlatButton.icon(
+                  icon: Icon(Icons.photo_library, size: 23, color: Colors.white,),
+                  onPressed: () {
+                    galleryImage(2);
+                    Navigator.pop(context);
+                  },
+                  label: Text('Gallery', style: TextStyle(fontSize: 18, color: Colors.white),),
+                )
+              ],
             )
           ],
-        );
-        showCupertinoModalPopup(
-            context: context, builder: (context) => action);
-      },
+        )
     );
   }
 
@@ -366,3 +393,4 @@ class _MemberDiaryState extends State<MemberDiary> {
     );
   }
 }
+
