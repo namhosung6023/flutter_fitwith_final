@@ -17,6 +17,7 @@ dependencies:
   jwt_decoder: ^1.0.3
   image_picker:
   google_maps_flutter:
+  carousel_slider: ^3.0.0
 
   # following page : https://pub.dev/packages/provider
   provider: ^4.3.2+3
