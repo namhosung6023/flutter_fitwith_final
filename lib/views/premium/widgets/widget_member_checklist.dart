@@ -42,7 +42,6 @@ class _MemberChecklistState extends State<MemberChecklist> {
       if(response.data['checklist'].length > 0){
         for (int i = 0; i < response.data['checklist'][0]['userComment'].length; i++) {
           commentList.add(response.data['checklist'][0]['userComment'][i].toString());
-
         }
         trainerComment = response.data['checklist'][0]['trainerComment'];
         checkListId = response.data['checklist'][0]['_id'];

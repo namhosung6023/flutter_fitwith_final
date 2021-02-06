@@ -26,11 +26,12 @@ class _MemberDiaryState extends State<MemberDiary> {
 
   int _pictureNumber = 0;
 
-  List cardList = [
-    Item1(),
-    Item2(),
-    Item3()
-  ];
+  List<Widget> morningBodyList = [];
+  List<Widget> nightBodyList = [];
+  List<Widget> morningFoodList = [];
+  List<Widget> afternoonFoodList = [];
+  List<Widget> nightFoodList = [];
+  List<Widget> snackList = [];
 
   List<T> map<T>(List list, Function handler) {
     List<T> result = [];
@@ -39,12 +40,12 @@ class _MemberDiaryState extends State<MemberDiary> {
   }
 
   final String endPoint = 'http://10.0.2.2:3000/file/upload';
-  String morningBody = '';
-  String nightBody = '';
-  String morningFood = '';
-  String afternoonFood = '';
-  String nightFood = '';
-  String snack = '';
+  List<String> morningBody = [];
+  List<String> nightBody = [];
+  List<String> morningFood = [];
+  List<String> afternoonFood = [];
+  List<String> nightFood = [];
+  List<String> snack = [];
   String userId;
   Map<String, dynamic> bodyLog;
 
@@ -60,25 +61,76 @@ class _MemberDiaryState extends State<MemberDiary> {
     Response response = await dio.get(
         'http://10.0.2.2:3000/file/diary/user/$userId',
         queryParameters: {"date": widget.selectedDay});
-    bodyLog = response.data['bodyLog'];
+    print(response.data['bodyLog'][0]['afternoonFood']);
     setState(() {
-      if (response.data['bodyLog'].length > 0) {
-        morningBody = response.data['bodyLog'][0]['morningBody'][0];
-        // nightBody = response.data['bodyLog'][0]['nightBody'];
-        // morningFood = response.data['bodyLog'][0]['morningFood'];
-
+      if (response.data['bodyLog'][0]['morningBody'].length > 0) {
+        for(int i = 0; i < response.data['bodyLog'][0]['morningBody'].length; i++) {
+          morningBodyList.add(PictureCard(pictureUrl: response.data['bodyLog'][0]['morningBody'][i].toString()));
+        }
       } else {
         setState(() {
-          morningBody = '';
-          nightBody = '';
-          morningFood = '';
+          morningBodyList = [];
+        });
+      }
+      if (response.data['bodyLog'][0]['nightBody'].length > 0) {
+        for(int i = 0; i < response.data['bodyLog'][0]['nightBody'].length; i++) {
+          nightBodyList.add(PictureCard(
+              pictureUrl: response.data['bodyLog'][0]['nightBody'][i]
+                  .toString()));
+        }
+      } else{
+        setState(() {
+          nightBodyList = [];
+        });
+      }
+      if (response.data['bodyLog'][0]['morningFood'].length > 0) {
+        for(int i = 0; i < response.data['bodyLog'][0]['morningFood'].length; i++) {
+          morningFoodList.add(PictureCard(
+              pictureUrl: response.data['bodyLog'][0]['morningFood'][i]
+                  .toString()));
+        }
+      }else{
+        setState(() {
+          morningFoodList = [];
+        });
+      }
+      if (response.data['bodyLog'][0]['afternoonFood'].length > 0) {
+        for(int i = 0; i < response.data['bodyLog'][0]['afternoonFood'].length; i++) {
+          afternoonFoodList.add(PictureCard(
+              pictureUrl: response.data['bodyLog'][0]['afternoonFood'][i]
+                  .toString()));
+        }
+      }else{
+        setState(() {
+          afternoonFoodList = [];
+        });
+      }
+      if (response.data['bodyLog'][0]['nightFood'].length > 0) {
+        for(int i = 0; i < response.data['bodyLog'][0]['nightFood'].length; i++) {
+          nightFoodList.add(PictureCard(
+              pictureUrl: response.data['bodyLog'][0]['nightFood'][i]
+                  .toString()));
+        }
+      }else{
+        setState(() {
+          nightFoodList = [];
+        });
+      }
+      if (response.data['bodyLog'][0]['snack'].length > 0) {
+        for(int i = 0; i < response.data['bodyLog'][0]['snack'].length; i++) {
+          snackList.add(PictureCard(
+              pictureUrl: response.data['bodyLog'][0]['snack'][i]
+                  .toString()));
+        }
+      }else{
+        setState(() {
+          snackList = [];
         });
       }
     });
   }
 
   void _upload(File file) async {
-    print("업로드함수");
     String fileName = file.path.split('/').last;
     String mimeType = mime(fileName);
     String mimee = mimeType.split('/')[0];
@@ -107,7 +159,6 @@ class _MemberDiaryState extends State<MemberDiary> {
 
   Future galleryImage() async {
     final pickedFile = await file.getImage(source: ImageSource.gallery);
-    print("pickedFile:${pickedFile.toString()}");
 
     setState(() {
       if (pickedFile != null) {
@@ -171,12 +222,12 @@ class _MemberDiaryState extends State<MemberDiary> {
     return Column(
       children: [
         const SizedBox(height: 24.0),
-        _buildSubtitle('공복 사진', 0 , morningBody),
+        _buildSubtitle('공복 사진', 0),
         _buildSubtitle1('일어나시고 배변 후 몸 사진을 찍어 올려주세요'),
         const SizedBox(height: 24.0),
         _buildWeight(),
         const SizedBox(height: 16.0),
-        _buildUploadImages(morningBody, 0),
+        _buildUploadImages(morningBodyList, 0),
         const SizedBox(height: 24.0),
       ],
     );
@@ -187,12 +238,12 @@ class _MemberDiaryState extends State<MemberDiary> {
     return Column(
       children: [
         const SizedBox(height: 24.0),
-        _buildSubtitle('자기전 사진', 1, nightBody),
+        _buildSubtitle('자기전 사진', 1),
         _buildSubtitle1('일어나시고 배변 후 몸 사진을 찍어 올려주세요'),
         const SizedBox(height: 24.0),
         _buildWeight(),
         const SizedBox(height: 16.0),
-        _buildUploadImages(nightBody, 1),
+        _buildUploadImages(nightBodyList, 1),
         const SizedBox(height: 24.0),
       ],
     );
@@ -222,17 +273,18 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 40),
         _buildSubtitle3('사진업로드'),
         const SizedBox(height: 8.0),
-        _buildFoodbutton(morningFood, afternoonFood, nightFood, snack, 2,3,4,5),
+        _buildFoodbutton(2,3,4,5),
         const SizedBox(height: 10.0),
-        _buildUploadMorningFoodSubtitle(),
+        // _buildUploadMorningFoodSubtitle(),
         const SizedBox(height: 10.0),
-        if (_value == 0)
-          _buildUploadImages(morningFood, 2)
-        else if (_value == 1)
-          _buildUploadImages(afternoonFood, 3)
-        else if (_value == 2)
-          _buildUploadImages(nightFood, 4)
-        else _buildUploadImages(snack, 5),
+        _buildUploadMorningImages(morningFoodList, 2),
+        // if (_value == 0)
+        //   _buildUploadImages(morningFoodList, 2)
+        // else if (_value == 1)
+        //   _buildUploadImages(afternoonFoodList, 3)
+        // else if (_value == 2)
+        //   _buildUploadImages(nightFoodList, 4)
+        // else _buildUploadImages(snackList, 5),
         const SizedBox(height: 16.0),
         Row(
           children: [
@@ -259,7 +311,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 20.0),
         _buildUploadAfternoonFoodSubtitle(),
         const SizedBox(height: 16.0),
-        _buildUploadAfteroonImages(),
+        _buildUploadAfteroonImages(afternoonFoodList, 3),
         const SizedBox(height: 16.0),
         Row(
           children: [
@@ -283,14 +335,75 @@ class _MemberDiaryState extends State<MemberDiary> {
             ),
           ],
         ),
+        const SizedBox(height: 10.0),
+        _buildUploadNightFoodSubtitle(),
+        const SizedBox(height: 10.0),
+        _buildUploadNightImages(nightFoodList, 4),
+        const SizedBox(height: 16.0),
+        Row(
+          children: [
+            Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
+            const SizedBox(width: 16.0),
+            Expanded(
+              child: TextField(
+                style: TextStyle(
+                    fontSize: 13.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black54),
+                decoration: InputDecoration(
+                  isDense: true, // Added this
+                  contentPadding: EdgeInsets.all(8.0),
+                  hintText: '음식이름을 입력해주세요',
+                  hintStyle: TextStyle(color: Color(0xffCCCCCC)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6.0)),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16.0),
+        _buildUploadSnackSubtitle(),
+        const SizedBox(height: 16.0),
+        _buildUploadSnackImages(snackList, 5),
+        const SizedBox(height: 16.0),
+        Row(
+          children: [
+            Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
+            const SizedBox(width: 16.0),
+            Expanded(
+              child: TextField(
+                style: TextStyle(
+                    fontSize: 13.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black54),
+                decoration: InputDecoration(
+                  isDense: true, // Added this
+                  contentPadding: EdgeInsets.all(8.0),
+                  hintText: '음식이름을 입력해주세요',
+                  hintStyle: TextStyle(color: Color(0xffCCCCCC)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6.0)),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16.0),
       ],
     );
+
   }
 
+
   ///식단관리 사진 업로드 버튼
-  Widget _buildFoodbutton(String imageUrl2,String imageUrl3,String imageUrl4,String imageUrl5, int pictureNumber2, int pictureNumber3, int pictureNumber4, int pictureNumber5) {
+  Widget _buildFoodbutton(int pictureNumber2, int pictureNumber3, int pictureNumber4, int pictureNumber5) {
     return Row(
       children: [
+        Text(
+          '아침',
+          style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight:  FontWeight.bold),
+        ),
         Expanded(
           child: OutlineButton(onPressed: (){
             showModalBottomSheet(
@@ -301,7 +414,6 @@ class _MemberDiaryState extends State<MemberDiary> {
                 context: context,
                 builder: ((builder) => bottomSheet()));
             _pictureNumber = pictureNumber2;
-            imageUrl2 = morningFood;
           },
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             color: Colors.black12,
@@ -329,7 +441,6 @@ class _MemberDiaryState extends State<MemberDiary> {
                 context: context,
                 builder: ((builder) => bottomSheet()));
             _pictureNumber = pictureNumber3;
-            imageUrl3 = afternoonFood;
           },
             color: Colors.black38,
             padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -355,7 +466,6 @@ class _MemberDiaryState extends State<MemberDiary> {
                 context: context,
                 builder: ((builder) => bottomSheet()));
             _pictureNumber = pictureNumber4;
-            imageUrl4 = nightFood;
           },
             color: Colors.black38,
             padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -382,7 +492,6 @@ class _MemberDiaryState extends State<MemberDiary> {
                 context: context,
                 builder: ((builder) => bottomSheet()));
             _pictureNumber = pictureNumber5;
-            imageUrl5 = snack;
           },
             color: Colors.black12,
             padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -435,7 +544,7 @@ class _MemberDiaryState extends State<MemberDiary> {
   }
 
   /// 체중 관리 이미지 업로드
-  Widget _buildSubtitle(String value, int pictureNumber, String imageUrl) {
+  Widget _buildSubtitle(String value, int pictureNumber) {
     return Row(
       children: [
         Text(
@@ -482,11 +591,22 @@ class _MemberDiaryState extends State<MemberDiary> {
   }
 
   ///식단관리에서 사진업로드시 생기는 타이틀
-  Widget _buildUploadMorningFoodSubtitle() {
+  // Widget _buildUploadMorningFoodSubtitle() {
+  //   return Row(
+  //     children: [
+  //       Text(
+  //         '아침',
+  //         style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight:  FontWeight.bold),
+  //       )
+  //     ],
+  //   );
+  // }
+
+  Widget _buildUploadNightFoodSubtitle() {
     return Row(
       children: [
         Text(
-          '아침',
+          '저녁',
           style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight:  FontWeight.bold),
         )
       ],
@@ -504,8 +624,90 @@ class _MemberDiaryState extends State<MemberDiary> {
     );
   }
 
+  Widget _buildUploadSnackSubtitle() {
+    return Row(
+      children: [
+        Text(
+          '간식',
+          style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight:  FontWeight.bold),
+        )
+      ],
+    );
+  }
+
   ///식단관리 이미지 업로드 된후 생성
-  Widget _buildUploadAfteroonImages() {
+
+  Widget _buildUploadMorningImages(List<Widget> imageUrlWidgetList, int pictureNumber) {
+    return InkWell(
+      child: Column(
+        children: [
+          CarouselSlider(
+            options: CarouselOptions(
+              height: 200.0,
+              enableInfiniteScroll: false,
+              aspectRatio: 80.0,
+              onPageChanged: (index, reason) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+            ),
+            items: imageUrlWidgetList.map((imageUrlWidget){
+              return Builder(
+                  builder:(BuildContext context){
+                    return Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: Card(
+                        color: Colors.blueAccent,
+                        child: imageUrlWidget,
+                      ),
+                    );
+                  }
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUploadAfteroonImages(List<Widget> imageUrlWidgetList, int pictureNumber) {
+    return InkWell(
+      child: Column(
+        children: [
+          CarouselSlider(
+            options: CarouselOptions(
+              height: 200.0,
+              enableInfiniteScroll: false,
+              aspectRatio: 80.0,
+              onPageChanged: (index, reason) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+            ),
+            items: imageUrlWidgetList.map((imageUrlWidget){
+              return Builder(
+                  builder:(BuildContext context){
+                    return Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: Card(
+                        color: Colors.blueAccent,
+                        child: imageUrlWidget,
+                      ),
+                    );
+                  }
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUploadNightImages(List<Widget> imageUrlWidgetList, int pictureNumber) {
     return InkWell(
       child: Column(
         children: [
@@ -520,7 +722,7 @@ class _MemberDiaryState extends State<MemberDiary> {
                 });
               },
             ),
-            items: cardList.map((card){
+            items: imageUrlWidgetList.map((imageUrlWidget){
               return Builder(
                   builder:(BuildContext context){
                     return Container(
@@ -528,26 +730,47 @@ class _MemberDiaryState extends State<MemberDiary> {
                       width: MediaQuery.of(context).size.width,
                       child: Card(
                         color: Colors.blueAccent,
-                        child: card,
+                        child: imageUrlWidget,
                       ),
                     );
                   }
               );
             }).toList(),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: map<Widget>(cardList, (index, url) {
-              return Container(
-                width: 500.0,
-                height: 5.0,
-                margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _currentIndex == index ? Colors.blueAccent : Colors.blueAccent,
-                ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUploadSnackImages(List<Widget> imageUrlWidgetList, int pictureNumber) {
+    return InkWell(
+      child: Column(
+        children: [
+          CarouselSlider(
+            options: CarouselOptions(
+              height: 200.0,
+              enableInfiniteScroll: false,
+              aspectRatio: 2.0,
+              onPageChanged: (index, reason) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+            ),
+            items: imageUrlWidgetList.map((imageUrlWidget){
+              return Builder(
+                  builder:(BuildContext context){
+                    return Container(
+                      height: MediaQuery.of(context).size.height*0.30,
+                      width: MediaQuery.of(context).size.width,
+                      child: Card(
+                        color: Colors.blueAccent,
+                        child: imageUrlWidget,
+                      ),
+                    );
+                  }
               );
-            }),
+            }).toList(),
           ),
         ],
       ),
@@ -567,7 +790,7 @@ class _MemberDiaryState extends State<MemberDiary> {
 
 
   /// 이미지 업로드 영역 빌드.
-  Widget _buildUploadImages(String imageUrl, int pictureNumber) {
+  Widget _buildUploadImages(List<Widget> imageUrlWidgetList, int pictureNumber) {
     return InkWell(
       child: Column(
         children: [
@@ -575,14 +798,14 @@ class _MemberDiaryState extends State<MemberDiary> {
             options: CarouselOptions(
               height: 200.0,
               enableInfiniteScroll: false,
-              aspectRatio: 2.0,
+              aspectRatio: 5.0,
               onPageChanged: (index, reason) {
                 setState(() {
                   _currentIndex = index;
                 });
               },
             ),
-            items: cardList.map((card){
+            items: imageUrlWidgetList.map((imageUrlWidget){
               return Builder(
                   builder:(BuildContext context){
                     return Container(
@@ -590,26 +813,12 @@ class _MemberDiaryState extends State<MemberDiary> {
                       width: MediaQuery.of(context).size.width,
                       child: Card(
                         color: Colors.blueAccent,
-                        child: card,
+                        child: imageUrlWidget,
                       ),
                     );
                   }
               );
             }).toList(),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: map<Widget>(cardList, (index, url) {
-              return Container(
-                width: 500.0,
-                height: 5.0,
-                margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _currentIndex == index ? Colors.blueAccent : Colors.blueAccent,
-                ),
-              );
-            }),
           ),
         ],
       ),
@@ -732,14 +941,6 @@ class Item2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            stops: [0.3, 1],
-            colors: [Color(0xff5f2c82), Color(0xff49a09d)]
-        ),
-      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -757,65 +958,17 @@ class Item2 extends StatelessWidget {
   }
  }
 
-class Item1 extends StatelessWidget {
-  const Item1({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            stops: [0.3, 1],
-            colors: [Color(0xff5f2c82), Color(0xff49a09d)]
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-              "1",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.bold
-              )
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class Item3 extends StatelessWidget {
-  const Item3({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.bottomRight,
-            stops: [0.3, 1],
-            colors: [Color(0xff5f2c82), Color(0xff49a09d)]
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-              "3",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.bold
-              )
-          ),
-        ],
-      ),
-    );
-  }
-}
-
+ class PictureCard extends StatelessWidget {
+  const PictureCard({
+     Key key,
+    this.pictureUrl
+ }) : super(key: key);
+  final String pictureUrl;
+   @override
+   Widget build(BuildContext context) {
+     return Container(
+       width: 100,
+       child: Image.network(pictureUrl),
+     );
+   }
+ }
