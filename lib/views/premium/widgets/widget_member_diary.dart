@@ -229,7 +229,6 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 16.0),
         (morningBodyList.length > 0) ? _buildUploadImages(morningBodyList, 0): Container(),
         const SizedBox(height: 24.0),
-        (morningBodyList.length > 0) ? Text('안녕') : Container(),
       ],
     );
   }
@@ -246,7 +245,6 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 16.0),
         (nightBodyList.length > 0) ?  _buildUploadImages(nightBodyList, 1) : Container(),
         const SizedBox(height: 24.0),
-        (nightBodyList.length > 0) ? Text('안녕') : Container(),
       ],
     );
   }
@@ -277,9 +275,9 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 8.0),
         _buildFoodbutton(2,3,4,5),
         const SizedBox(height: 10.0),
-        _buildUploadMorningFoodSubtitle(),
+        (morningFoodList.length > 0) ? _buildUploadMorningFoodSubtitle() : Container(),
         const SizedBox(height: 10.0),
-        _buildUploadMorningImages(morningFoodList, 2),
+        (morningFoodList.length > 0) ? _buildUploadMorningImages(morningFoodList, 2) : Container(),
         // if (_value == 0)
         //   _buildUploadImages(morningFoodList, 2)
         // else if (_value == 1)
@@ -288,7 +286,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         //   _buildUploadImages(nightFoodList, 4)
         // else _buildUploadImages(snackList, 5),
         const SizedBox(height: 16.0),
-        Row(
+        (morningFoodList.length > 0) ? Row(
           children: [
             Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
             const SizedBox(width: 16.0),
@@ -309,13 +307,13 @@ class _MemberDiaryState extends State<MemberDiary> {
               ),
             ),
           ],
-        ),
+        ) : Container(),
         const SizedBox(height: 20.0),
-        _buildUploadAfternoonFoodSubtitle(),
+        (afternoonFoodList.length > 0) ? _buildUploadAfternoonFoodSubtitle() : Container(),
         const SizedBox(height: 16.0),
-        _buildUploadAfteroonImages(afternoonFoodList, 3),
+        (afternoonFoodList.length > 0) ? _buildUploadAfteroonImages(afternoonFoodList, 3) : Container(),
         const SizedBox(height: 16.0),
-        Row(
+        (afternoonFoodList.length > 0) ?Row(
           children: [
             Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
             const SizedBox(width: 16.0),
@@ -336,13 +334,13 @@ class _MemberDiaryState extends State<MemberDiary> {
               ),
             ),
           ],
-        ),
+        ) : Container(),
         const SizedBox(height: 10.0),
-        _buildUploadNightFoodSubtitle(),
+        (nightFoodList.length > 0) ? _buildUploadNightFoodSubtitle() : Container(),
         const SizedBox(height: 10.0),
-        _buildUploadNightImages(nightFoodList, 4),
+        (nightFoodList.length > 0) ? _buildUploadNightImages(nightFoodList, 4) : Container(),
         const SizedBox(height: 16.0),
-        Row(
+        (nightFoodList.length > 0) ? Row(
           children: [
             Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
             const SizedBox(width: 16.0),
@@ -363,13 +361,13 @@ class _MemberDiaryState extends State<MemberDiary> {
               ),
             ),
           ],
-        ),
+        )  : Container(),
         const SizedBox(height: 16.0),
-        _buildUploadSnackSubtitle(),
+        (snackList.length > 0) ? _buildUploadSnackSubtitle() : Container() ,
         const SizedBox(height: 16.0),
-        _buildUploadSnackImages(snackList, 5),
+        (snackList.length > 0) ? _buildUploadSnackImages(snackList, 5) : Container() ,
         const SizedBox(height: 16.0),
-        Row(
+        (snackList.length > 0) ? Row(
           children: [
             Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
             const SizedBox(width: 16.0),
@@ -390,7 +388,7 @@ class _MemberDiaryState extends State<MemberDiary> {
               ),
             ),
           ],
-        ),
+        ): Container(),
         const SizedBox(height: 16.0),
       ],
     );
