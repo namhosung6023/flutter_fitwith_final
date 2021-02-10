@@ -21,6 +21,11 @@ class MemberDiary extends StatefulWidget {
 
 class _MemberDiaryState extends State<MemberDiary> {
 
+  // double morningWeight = 0.0;
+  // double nightWeight = 0.0;
+  final myControllerMorningWeight = TextEditingController();
+  final myControllerNightWeight = TextEditingController();
+
 
   int _currentIndex = 0;
 
@@ -56,9 +61,17 @@ class _MemberDiaryState extends State<MemberDiary> {
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
     userId = decodedToken['_id'];
 
+
     Dio dio = new Dio();
     dio.options.headers["accesstoken"] = "$token";
-    Response response = await dio.get(
+    Response response = await dio.post('http://10.0.2.2:3000/premium/diary/weight/$userId', queryParameters: {"date": widget.selectedDay});
+    setState(() {
+      // myControllerMorningWeight = response.data['bodyLog'][0][MorningWeight];
+      // myControllerNightWeight  = response.data['bodyLog'][0][myControllerNightWeight];
+    });
+
+
+    response = await dio.get(
         'http://10.0.2.2:3000/file/diary/user/$userId',
         queryParameters: {"date": widget.selectedDay});
     print(response.data['bodyLog'][0]['afternoonFood']);
@@ -199,6 +212,12 @@ class _MemberDiaryState extends State<MemberDiary> {
     _getdata();
     super.didUpdateWidget(oldWidget);
   }
+  @override
+  void dispose() {
+    myControllerMorningWeight.dispose();
+    myControllerNightWeight.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -225,7 +244,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         _buildSubtitle('공복 사진', 0),
         _buildSubtitle1('일어나시고 배변 후 몸 사진을 찍어 올려주세요'),
         const SizedBox(height: 24.0),
-        _buildWeight(),
+        _buildMorningWeight(),
         const SizedBox(height: 16.0),
         (morningBodyList.length > 0) ? _buildUploadImages(morningBodyList, 0): Container(),
         const SizedBox(height: 24.0),
@@ -241,7 +260,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         _buildSubtitle('자기전 사진', 1),
         _buildSubtitle1('일어나시고 배변 후 몸 사진을 찍어 올려주세요'),
         const SizedBox(height: 24.0),
-        _buildWeight(),
+        _buildNightWeight(),
         const SizedBox(height: 16.0),
         (nightBodyList.length > 0) ?  _buildUploadImages(nightBodyList, 1) : Container(),
         const SizedBox(height: 24.0),
@@ -638,10 +657,6 @@ class _MemberDiaryState extends State<MemberDiary> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          // Text(
-          //   '아침',
-          //   style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight:  FontWeight.bold),
-          // ),
           CarouselSlider(
             options: CarouselOptions(
               height: 200.0,
@@ -895,7 +910,7 @@ class _MemberDiaryState extends State<MemberDiary> {
   }
 
   /// 몸무게 입력 영역 빌드.
-  Widget _buildWeight() {
+  Widget _buildMorningWeight() {
     return Row(
       children: [
         Text(
@@ -910,6 +925,10 @@ class _MemberDiaryState extends State<MemberDiary> {
         SizedBox(
           width: 100.0,
           child: TextField(
+            controller: myControllerMorningWeight,
+            onEditingComplete: (){
+              print(myControllerMorningWeight.text);
+            },
             style: TextStyle(
                 fontSize: 13.0,
                 fontWeight: FontWeight.bold,
@@ -934,8 +953,50 @@ class _MemberDiaryState extends State<MemberDiary> {
       ],
     );
   }
+  Widget _buildNightWeight() {
+    return Row(
+      children: [
+        Text(
+          '몸무게 기록',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 15.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(width: 8.0),
+        SizedBox(
+          width: 100.0,
+          child: TextField(
+            controller: myControllerNightWeight,
+            onEditingComplete: (){
+              print(myControllerNightWeight.text);
+            },
+            style: TextStyle(
+                fontSize: 13.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54),
+            decoration: InputDecoration(
+              isDense: true, // Added this
+              contentPadding: EdgeInsets.all(8.0),
+              border:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(6.0)),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8.0),
+        Text(
+          'kg',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
 }
-
 
  class PictureCard extends StatelessWidget {
   const PictureCard({
