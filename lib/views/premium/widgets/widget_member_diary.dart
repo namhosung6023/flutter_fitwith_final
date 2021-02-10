@@ -227,8 +227,9 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 24.0),
         _buildWeight(),
         const SizedBox(height: 16.0),
-        _buildUploadImages(morningBodyList, 0),
+        (morningBodyList.length > 0) ? _buildUploadImages(morningBodyList, 0): Container(),
         const SizedBox(height: 24.0),
+        (morningBodyList.length > 0) ? Text('안녕') : Container(),
       ],
     );
   }
@@ -243,8 +244,9 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 24.0),
         _buildWeight(),
         const SizedBox(height: 16.0),
-        _buildUploadImages(nightBodyList, 1),
+        (nightBodyList.length > 0) ?  _buildUploadImages(nightBodyList, 1) : Container(),
         const SizedBox(height: 24.0),
+        (nightBodyList.length > 0) ? Text('안녕') : Container(),
       ],
     );
   }
@@ -275,7 +277,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         const SizedBox(height: 8.0),
         _buildFoodbutton(2,3,4,5),
         const SizedBox(height: 10.0),
-        // _buildUploadMorningFoodSubtitle(),
+        _buildUploadMorningFoodSubtitle(),
         const SizedBox(height: 10.0),
         _buildUploadMorningImages(morningFoodList, 2),
         // if (_value == 0)
@@ -400,10 +402,6 @@ class _MemberDiaryState extends State<MemberDiary> {
   Widget _buildFoodbutton(int pictureNumber2, int pictureNumber3, int pictureNumber4, int pictureNumber5) {
     return Row(
       children: [
-        Text(
-          '아침',
-          style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight:  FontWeight.bold),
-        ),
         Expanded(
           child: OutlineButton(onPressed: (){
             showModalBottomSheet(
@@ -591,16 +589,16 @@ class _MemberDiaryState extends State<MemberDiary> {
   }
 
   ///식단관리에서 사진업로드시 생기는 타이틀
-  // Widget _buildUploadMorningFoodSubtitle() {
-  //   return Row(
-  //     children: [
-  //       Text(
-  //         '아침',
-  //         style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight:  FontWeight.bold),
-  //       )
-  //     ],
-  //   );
-  // }
+  Widget _buildUploadMorningFoodSubtitle() {
+    return Row(
+      children: [
+        Text(
+          '아침',
+          style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight:  FontWeight.bold),
+        )
+      ],
+    );
+  }
 
   Widget _buildUploadNightFoodSubtitle() {
     return Row(
@@ -640,7 +638,12 @@ class _MemberDiaryState extends State<MemberDiary> {
   Widget _buildUploadMorningImages(List<Widget> imageUrlWidgetList, int pictureNumber) {
     return InkWell(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          // Text(
+          //   '아침',
+          //   style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight:  FontWeight.bold),
+          // ),
           CarouselSlider(
             options: CarouselOptions(
               height: 200.0,
@@ -935,28 +938,6 @@ class _MemberDiaryState extends State<MemberDiary> {
   }
 }
 
-class Item2 extends StatelessWidget {
-  const Item2({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-              "2",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.bold
-              )
-          ),
-        ],
-      ),
-    );
-  }
- }
 
  class PictureCard extends StatelessWidget {
   const PictureCard({
@@ -967,8 +948,7 @@ class Item2 extends StatelessWidget {
    @override
    Widget build(BuildContext context) {
      return Container(
-       width: 100,
-       child: Image.network(pictureUrl),
+           child: Image.network(pictureUrl, fit: BoxFit.fill,)
      );
    }
  }
