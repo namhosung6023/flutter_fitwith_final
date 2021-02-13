@@ -23,13 +23,14 @@ class _MemberDiaryState extends State<MemberDiary> {
 
   // double morningWeight = 0.0;
   // double nightWeight = 0.0;
-  final myControllerMorningWeight = TextEditingController();
-  final myControllerNightWeight = TextEditingController();
+  var myControllerMorningWeight = TextEditingController();
+  var myControllerNightWeight = TextEditingController();
 
 
   int _currentIndex = 0;
 
   int _pictureNumber = 0;
+  int _weightNumber = 0;
 
   List<Widget> morningBodyList = [];
   List<Widget> nightBodyList = [];
@@ -64,85 +65,103 @@ class _MemberDiaryState extends State<MemberDiary> {
 
     Dio dio = new Dio();
     dio.options.headers["accesstoken"] = "$token";
-    Response response = await dio.post('http://10.0.2.2:3000/premium/diary/weight/$userId', queryParameters: {"date": widget.selectedDay});
-    setState(() {
-      // myControllerMorningWeight = response.data['bodyLog'][0][MorningWeight];
-      // myControllerNightWeight  = response.data['bodyLog'][0][myControllerNightWeight];
-    });
 
 
-    response = await dio.get(
+    Response response = await dio.get(
         'http://10.0.2.2:3000/file/diary/user/$userId',
         queryParameters: {"date": widget.selectedDay});
-    print(response.data['bodyLog'][0]['afternoonFood']);
-    setState(() {
-      if (response.data['bodyLog'][0]['morningBody'].length > 0) {
-        for(int i = 0; i < response.data['bodyLog'][0]['morningBody'].length; i++) {
-          morningBodyList.add(PictureCard(pictureUrl: response.data['bodyLog'][0]['morningBody'][i].toString()));
+    print(response.data['bodyLog']);
+    if (response.data['bodyLog'].length > 0) {
+      setState(() {
+        if (response.data['bodyLog'][0]['morningBody'].length > 0) {
+          for(int i = 0; i < response.data['bodyLog'][0]['morningBody'].length; i++) {
+            morningBodyList.add(PictureCard(pictureUrl: response.data['bodyLog'][0]['morningBody'][i].toString()));
+          }
+        } else {
+          setState(() {
+            morningBodyList = [];
+          });
         }
-      } else {
-        setState(() {
-          morningBodyList = [];
-        });
-      }
-      if (response.data['bodyLog'][0]['nightBody'].length > 0) {
-        for(int i = 0; i < response.data['bodyLog'][0]['nightBody'].length; i++) {
-          nightBodyList.add(PictureCard(
-              pictureUrl: response.data['bodyLog'][0]['nightBody'][i]
-                  .toString()));
+        if (response.data['bodyLog'][0]['nightBody'].length > 0) {
+          for(int i = 0; i < response.data['bodyLog'][0]['nightBody'].length; i++) {
+            nightBodyList.add(PictureCard(
+                pictureUrl: response.data['bodyLog'][0]['nightBody'][i]
+                    .toString()));
+          }
+        } else{
+          setState(() {
+            nightBodyList = [];
+          });
         }
-      } else{
-        setState(() {
-          nightBodyList = [];
-        });
-      }
-      if (response.data['bodyLog'][0]['morningFood'].length > 0) {
-        for(int i = 0; i < response.data['bodyLog'][0]['morningFood'].length; i++) {
-          morningFoodList.add(PictureCard(
-              pictureUrl: response.data['bodyLog'][0]['morningFood'][i]
-                  .toString()));
+        if (response.data['bodyLog'][0]['morningFood'].length > 0) {
+          for(int i = 0; i < response.data['bodyLog'][0]['morningFood'].length; i++) {
+            morningFoodList.add(PictureCard(
+                pictureUrl: response.data['bodyLog'][0]['morningFood'][i]
+                    .toString()));
+          }
+        }else{
+          setState(() {
+            morningFoodList = [];
+          });
         }
-      }else{
-        setState(() {
-          morningFoodList = [];
-        });
-      }
-      if (response.data['bodyLog'][0]['afternoonFood'].length > 0) {
-        for(int i = 0; i < response.data['bodyLog'][0]['afternoonFood'].length; i++) {
-          afternoonFoodList.add(PictureCard(
-              pictureUrl: response.data['bodyLog'][0]['afternoonFood'][i]
-                  .toString()));
+        if (response.data['bodyLog'][0]['afternoonFood'].length > 0) {
+          for(int i = 0; i < response.data['bodyLog'][0]['afternoonFood'].length; i++) {
+            afternoonFoodList.add(PictureCard(
+                pictureUrl: response.data['bodyLog'][0]['afternoonFood'][i]
+                    .toString()));
+          }
+        }else{
+          setState(() {
+            afternoonFoodList = [];
+          });
         }
-      }else{
-        setState(() {
-          afternoonFoodList = [];
-        });
-      }
-      if (response.data['bodyLog'][0]['nightFood'].length > 0) {
-        for(int i = 0; i < response.data['bodyLog'][0]['nightFood'].length; i++) {
-          nightFoodList.add(PictureCard(
-              pictureUrl: response.data['bodyLog'][0]['nightFood'][i]
-                  .toString()));
+        if (response.data['bodyLog'][0]['nightFood'].length > 0) {
+          for(int i = 0; i < response.data['bodyLog'][0]['nightFood'].length; i++) {
+            nightFoodList.add(PictureCard(
+                pictureUrl: response.data['bodyLog'][0]['nightFood'][i]
+                    .toString()));
+          }
+        }else{
+          setState(() {
+            nightFoodList = [];
+          });
         }
-      }else{
-        setState(() {
-          nightFoodList = [];
-        });
-      }
-      if (response.data['bodyLog'][0]['snack'].length > 0) {
-        for(int i = 0; i < response.data['bodyLog'][0]['snack'].length; i++) {
-          snackList.add(PictureCard(
-              pictureUrl: response.data['bodyLog'][0]['snack'][i]
-                  .toString()));
+        if (response.data['bodyLog'][0]['snack'].length > 0) {
+          for(int i = 0; i < response.data['bodyLog'][0]['snack'].length; i++) {
+            snackList.add(PictureCard(
+                pictureUrl: response.data['bodyLog'][0]['snack'][i]
+                    .toString()));
+          }
+        }else{
+          setState(() {
+            snackList = [];
+          });
         }
-      }else{
-        setState(() {
-          snackList = [];
-        });
-      }
-    });
+      });
+    }
+
   }
 
+  ///몸무게 업로드
+  void _weight() async {
+    print('안녕');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    Dio dio = new Dio();
+    print('dio실행');
+    print('${widget.selectedDay}');
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    userId = decodedToken['_id'];
+    dio.options.headers["accesstoken"] = "$token";
+    Response response = await dio.post('http://10.0.2.2:3000/premium/diary/weight/$userId',
+        data: {"date": jsonEncode(widget.selectedDay.toIso8601String()), "morningWeight": myControllerMorningWeight.text, "nightWeight": myControllerNightWeight.text, "weightNumber": _weightNumber});
+    myControllerMorningWeight = response.data['bodyLog'][0]['morningWeight'];
+    myControllerNightWeight = response.data['bodyLog'][0]['nightWeight'];
+    print(response.data['bodyLog'][0]['nightWeight']);
+  }
+
+  ///다이어리 사진 업로드
   void _upload(File file) async {
     String fileName = file.path.split('/').last;
     String mimeType = mime(fileName);
@@ -244,7 +263,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         _buildSubtitle('공복 사진', 0),
         _buildSubtitle1('일어나시고 배변 후 몸 사진을 찍어 올려주세요'),
         const SizedBox(height: 24.0),
-        _buildMorningWeight(),
+        _buildMorningWeight(0),
         const SizedBox(height: 16.0),
         (morningBodyList.length > 0) ? _buildUploadImages(morningBodyList, 0): Container(),
         const SizedBox(height: 24.0),
@@ -260,7 +279,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         _buildSubtitle('자기전 사진', 1),
         _buildSubtitle1('일어나시고 배변 후 몸 사진을 찍어 올려주세요'),
         const SizedBox(height: 24.0),
-        _buildNightWeight(),
+        _buildNightWeight(1),
         const SizedBox(height: 16.0),
         (nightBodyList.length > 0) ?  _buildUploadImages(nightBodyList, 1) : Container(),
         const SizedBox(height: 24.0),
@@ -910,7 +929,7 @@ class _MemberDiaryState extends State<MemberDiary> {
   }
 
   /// 몸무게 입력 영역 빌드.
-  Widget _buildMorningWeight() {
+  Widget _buildMorningWeight(int weightNumber) {
     return Row(
       children: [
         Text(
@@ -927,6 +946,8 @@ class _MemberDiaryState extends State<MemberDiary> {
           child: TextField(
             controller: myControllerMorningWeight,
             onEditingComplete: (){
+              _weight();
+              _weightNumber = weightNumber;
               print(myControllerMorningWeight.text);
             },
             style: TextStyle(
@@ -953,7 +974,7 @@ class _MemberDiaryState extends State<MemberDiary> {
       ],
     );
   }
-  Widget _buildNightWeight() {
+  Widget _buildNightWeight(int weightNumber) {
     return Row(
       children: [
         Text(
@@ -970,6 +991,8 @@ class _MemberDiaryState extends State<MemberDiary> {
           child: TextField(
             controller: myControllerNightWeight,
             onEditingComplete: (){
+              _weight();
+              _weightNumber = weightNumber;
               print(myControllerNightWeight.text);
             },
             style: TextStyle(
