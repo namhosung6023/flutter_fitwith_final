@@ -20,9 +20,6 @@ class MemberDiary extends StatefulWidget {
 }
 
 class _MemberDiaryState extends State<MemberDiary> {
-
-  // double morningWeight = 0.0;
-  // double nightWeight = 0.0;
   var myControllerMorningWeight = TextEditingController();
   var myControllerNightWeight = TextEditingController();
 
@@ -38,12 +35,6 @@ class _MemberDiaryState extends State<MemberDiary> {
   List<Widget> afternoonFoodList = [];
   List<Widget> nightFoodList = [];
   List<Widget> snackList = [];
-
-  List<T> map<T>(List list, Function handler) {
-    List<T> result = [];
-    for (var i = 0; i < list.length; i++) {}
-    return result;
-  }
 
   final String endPoint = 'http://10.0.2.2:3000/file/upload';
   List<String> morningBody = [];

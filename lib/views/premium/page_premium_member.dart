@@ -38,6 +38,7 @@ class _PremiumMemberPageState extends State<PremiumMemberPage> with SingleTicker
           const SizedBox(height: 8.0),
           _buildDatePicker(),
           const SizedBox(height: 24.0),
+          //트레이너 코멘트 들어가는 자리
           Padding(
             padding: const EdgeInsets.only(left: 32.0, right: 32.0),
             child: _buildTabBar(),
