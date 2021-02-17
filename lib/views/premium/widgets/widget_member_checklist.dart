@@ -131,7 +131,7 @@ class _MemberChecklistState extends State<MemberChecklist> {
     return ListView(
       padding: const EdgeInsets.only(left: 32.0, right: 32.0),
       children: [
-        const SizedBox(height: 16.0),
+        const SizedBox(height: 20.0),
         const SizedBox(height: 32.0),
         Text(
           '오늘의 체크리스트',
@@ -156,20 +156,16 @@ class _MemberChecklistState extends State<MemberChecklist> {
         const SizedBox(height: 8.0),
         ...this._member.checklist.map((e) => _buildChecklistItem(e)).toList(),
         const SizedBox(height: 24.0),
-        _buildTrainerComment(),
-        const SizedBox(height: 8.0),
-        ...this._member.commentList.map((e) => _buildUserComment(e)).toList(),
-        const SizedBox(height: 8.0),
-        _buildTextComposer(),
         const SizedBox(height: CommonUtils.DEFAULT_PAGE_BOTTOM_PADDING),
       ],
     );
   }
 
+
   /// 회원의 메세지 위젯 빌드.
   Widget _buildTrainerComment() {
     final profile = ClipOval(
-      child: Image.asset('assets/img_sample.png', fit: BoxFit.cover, width: 40.0, height: 40.0),
+      child: Image.asset('assets/img_sample.png', fit: BoxFit.cover, width: 50.0, height: 40.0),
     );
 
     final message = Container(

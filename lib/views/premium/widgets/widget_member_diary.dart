@@ -22,12 +22,16 @@ class MemberDiary extends StatefulWidget {
 class _MemberDiaryState extends State<MemberDiary> {
   var myControllerMorningWeight = TextEditingController();
   var myControllerNightWeight = TextEditingController();
-
+  var myControllerMorningFoodTitle = TextEditingController();
+  var myControllerAfternoonFoodTitle = TextEditingController();
+  var myControllerNightFoodTitle = TextEditingController();
+  var myControllerSnackTitle = TextEditingController();
 
   int _currentIndex = 0;
 
   int _pictureNumber = 0;
   int _weightNumber = 0;
+  int _foodTitleNumber = 0;
 
   List<Widget> morningBodyList = [];
   List<Widget> nightBodyList = [];
@@ -135,13 +139,10 @@ class _MemberDiaryState extends State<MemberDiary> {
 
   ///몸무게 업로드
   void _weight() async {
-    print('안녕');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
     Dio dio = new Dio();
-    print('dio실행');
-    print('${widget.selectedDay}');
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
     userId = decodedToken['_id'];
     dio.options.headers["accesstoken"] = "$token";
@@ -149,7 +150,26 @@ class _MemberDiaryState extends State<MemberDiary> {
         data: {"date": jsonEncode(widget.selectedDay.toIso8601String()), "morningWeight": myControllerMorningWeight.text, "nightWeight": myControllerNightWeight.text, "weightNumber": _weightNumber});
     myControllerMorningWeight = response.data['bodyLog'][0]['morningWeight'];
     myControllerNightWeight = response.data['bodyLog'][0]['nightWeight'];
-    print(response.data['bodyLog'][0]['nightWeight']);
+  }
+
+  ///음식 타이틀 업로드
+  void _foodTitle() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    Dio dio = new Dio();
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    userId = decodedToken['_id'];
+    dio.options.headers["accesstoken"] = "$token";
+    Response response = await dio.post('http://10.0.2.2:3000/premium/diary/foodTitle/$userId',
+        data: { "date": jsonEncode(widget.selectedDay.toIso8601String()),
+          "morningFoodTitle" : myControllerMorningFoodTitle.text, "afternoonFoodTitle" : myControllerAfternoonFoodTitle.text,
+          "nightFoodTitle" : myControllerNightFoodTitle.text, "snackTitle" : myControllerSnackTitle.text, "foodTitleNumber" : _foodTitleNumber
+    });
+    myControllerMorningFoodTitle = response.data['bodyLog'][0]['morningFoodTitle'];
+    myControllerAfternoonFoodTitle = response.data['bodyLog'][0]['afternoonFoodTitle'];
+    myControllerNightFoodTitle = response.data['bodyLog'][0]['nightFoodTitle'];
+    myControllerSnackTitle = response.data['bodyLog'][0]['snackTitle'];
   }
 
   ///다이어리 사진 업로드
@@ -307,117 +327,26 @@ class _MemberDiaryState extends State<MemberDiary> {
         (morningFoodList.length > 0) ? _buildUploadMorningFoodSubtitle() : Container(),
         const SizedBox(height: 10.0),
         (morningFoodList.length > 0) ? _buildUploadMorningImages(morningFoodList, 2) : Container(),
-        // if (_value == 0)
-        //   _buildUploadImages(morningFoodList, 2)
-        // else if (_value == 1)
-        //   _buildUploadImages(afternoonFoodList, 3)
-        // else if (_value == 2)
-        //   _buildUploadImages(nightFoodList, 4)
-        // else _buildUploadImages(snackList, 5),
         const SizedBox(height: 16.0),
-        (morningFoodList.length > 0) ? Row(
-          children: [
-            Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
-            const SizedBox(width: 16.0),
-            Expanded(
-              child: TextField(
-                style: TextStyle(
-                    fontSize: 13.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black54),
-                decoration: InputDecoration(
-                  isDense: true, // Added this
-                  contentPadding: EdgeInsets.all(8.0),
-                  hintText: '음식이름을 입력해주세요',
-                  hintStyle: TextStyle(color: Color(0xffCCCCCC)),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6.0)),
-                ),
-              ),
-            ),
-          ],
-        ) : Container(),
+        (morningFoodList.length > 0) ? _morningFoodTitle(0) : Container(),
         const SizedBox(height: 20.0),
         (afternoonFoodList.length > 0) ? _buildUploadAfternoonFoodSubtitle() : Container(),
         const SizedBox(height: 16.0),
         (afternoonFoodList.length > 0) ? _buildUploadAfteroonImages(afternoonFoodList, 3) : Container(),
         const SizedBox(height: 16.0),
-        (afternoonFoodList.length > 0) ?Row(
-          children: [
-            Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
-            const SizedBox(width: 16.0),
-            Expanded(
-              child: TextField(
-                style: TextStyle(
-                    fontSize: 13.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black54),
-                decoration: InputDecoration(
-                  isDense: true, // Added this
-                  contentPadding: EdgeInsets.all(8.0),
-                  hintText: '음식이름을 입력해주세요',
-                  hintStyle: TextStyle(color: Color(0xffCCCCCC)),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6.0)),
-                ),
-              ),
-            ),
-          ],
-        ) : Container(),
+        (afternoonFoodList.length > 0) ?_afternoonFoodTitle(1) : Container(),
         const SizedBox(height: 10.0),
         (nightFoodList.length > 0) ? _buildUploadNightFoodSubtitle() : Container(),
         const SizedBox(height: 10.0),
         (nightFoodList.length > 0) ? _buildUploadNightImages(nightFoodList, 4) : Container(),
         const SizedBox(height: 16.0),
-        (nightFoodList.length > 0) ? Row(
-          children: [
-            Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
-            const SizedBox(width: 16.0),
-            Expanded(
-              child: TextField(
-                style: TextStyle(
-                    fontSize: 13.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black54),
-                decoration: InputDecoration(
-                  isDense: true, // Added this
-                  contentPadding: EdgeInsets.all(8.0),
-                  hintText: '음식이름을 입력해주세요',
-                  hintStyle: TextStyle(color: Color(0xffCCCCCC)),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6.0)),
-                ),
-              ),
-            ),
-          ],
-        )  : Container(),
+        (nightFoodList.length > 0) ?  nightFoodTitle(2)  : Container(),
         const SizedBox(height: 16.0),
         (snackList.length > 0) ? _buildUploadSnackSubtitle() : Container() ,
         const SizedBox(height: 16.0),
         (snackList.length > 0) ? _buildUploadSnackImages(snackList, 5) : Container() ,
         const SizedBox(height: 16.0),
-        (snackList.length > 0) ? Row(
-          children: [
-            Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
-            const SizedBox(width: 16.0),
-            Expanded(
-              child: TextField(
-                style: TextStyle(
-                    fontSize: 13.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black54),
-                decoration: InputDecoration(
-                  isDense: true, // Added this
-                  contentPadding: EdgeInsets.all(8.0),
-                  hintText: '음식이름을 입력해주세요',
-                  hintStyle: TextStyle(color: Color(0xffCCCCCC)),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6.0)),
-                ),
-              ),
-            ),
-          ],
-        ): Container(),
+        (snackList.length > 0) ? snackFoodTitle(3): Container(),
         const SizedBox(height: 16.0),
       ],
     );
@@ -813,7 +742,131 @@ class _MemberDiaryState extends State<MemberDiary> {
     );
   }
 
+  ///음식이름 적는 영역 빌드.
+  Widget _morningFoodTitle(int foodTitleNumber) {
+    return Row(
+      children: [
+        Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
+        const SizedBox(width: 16.0),
+        Expanded(
+          child: TextField(
+            controller: myControllerMorningFoodTitle,
+            onEditingComplete: (){
+              _foodTitle();
+              _foodTitleNumber = foodTitleNumber;
+              print(myControllerMorningFoodTitle.text);
+            },
+            style: TextStyle(
+                fontSize: 13.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54),
+            decoration: InputDecoration(
+              isDense: true, // Added this
+              contentPadding: EdgeInsets.all(8.0),
+              hintText: '음식이름을 입력해주세요',
+              hintStyle: TextStyle(color: Color(0xffCCCCCC)),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6.0)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
+
+  Widget _afternoonFoodTitle(int foodTitleNumber) {
+    return Row(
+      children: [
+        Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
+        const SizedBox(width: 16.0),
+        Expanded(
+          child: TextField(
+            controller: myControllerAfternoonFoodTitle,
+            onEditingComplete: (){
+              _foodTitle();
+              _foodTitleNumber = foodTitleNumber;
+              print(myControllerAfternoonFoodTitle.text);
+            },
+            style: TextStyle(
+                fontSize: 13.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54),
+            decoration: InputDecoration(
+              isDense: true, // Added this
+              contentPadding: EdgeInsets.all(8.0),
+              hintText: '음식이름을 입력해주세요',
+              hintStyle: TextStyle(color: Color(0xffCCCCCC)),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6.0)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget nightFoodTitle(int foodTitleNumber) {
+    return Row(
+      children: [
+        Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
+        const SizedBox(width: 16.0),
+        Expanded(
+          child: TextField(
+            controller: myControllerNightFoodTitle,
+            onEditingComplete: (){
+              _foodTitle();
+              _foodTitleNumber = foodTitleNumber;
+              print(myControllerNightFoodTitle.text);
+            },
+            style: TextStyle(
+                fontSize: 13.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54),
+            decoration: InputDecoration(
+              isDense: true, // Added this
+              contentPadding: EdgeInsets.all(8.0),
+              hintText: '음식이름을 입력해주세요',
+              hintStyle: TextStyle(color: Color(0xffCCCCCC)),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6.0)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget snackFoodTitle(int foodTitleNumber) {
+    return Row(
+      children: [
+        Image.asset('assets/ic_diet.png', width: 24.0, height: 24.0),
+        const SizedBox(width: 16.0),
+        Expanded(
+          child: TextField(
+            controller: myControllerSnackTitle,
+            onEditingComplete: (){
+              _foodTitle();
+              _foodTitleNumber = foodTitleNumber;
+              print(myControllerSnackTitle.text);
+            },
+            style: TextStyle(
+                fontSize: 13.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54),
+            decoration: InputDecoration(
+              isDense: true, // Added this
+              contentPadding: EdgeInsets.all(8.0),
+              hintText: '음식이름을 입력해주세요',
+              hintStyle: TextStyle(color: Color(0xffCCCCCC)),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6.0)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   /// 이미지 업로드 영역 빌드.
   Widget _buildUploadImages(List<Widget> imageUrlWidgetList, int pictureNumber) {
@@ -822,7 +875,7 @@ class _MemberDiaryState extends State<MemberDiary> {
         children: [
           CarouselSlider(
             options: CarouselOptions(
-              height: 200.0,
+              height: 300.0,
               enableInfiniteScroll: false,
               aspectRatio: 5.0,
               onPageChanged: (index, reason) {

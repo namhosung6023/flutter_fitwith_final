@@ -2,9 +2,13 @@ import 'package:fitwith/utils/utils_common.dart';
 import 'package:fitwith/utils/utils_widget.dart';
 import 'package:fitwith/views/premium/widgets/widget_member_checklist.dart';
 import 'package:fitwith/views/premium/widgets/widget_member_diary.dart';
+import 'package:fitwith/views/premium/widgets/widget_member_checklist.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:dio/dio.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// 프리미엄 - 회원 전용 페이지.
 class PremiumMemberPage extends StatefulWidget {
@@ -14,6 +18,9 @@ class PremiumMemberPage extends StatefulWidget {
 
 class _PremiumMemberPageState extends State<PremiumMemberPage> with SingleTickerProviderStateMixin {
 
+  String userId;
+  String trainerComment;
+
   /// 캘린더 컨트롤러.
   final _calendarCtrl = CalendarController();
   DateTime _selectedDay = DateTime.now();
@@ -21,11 +28,35 @@ class _PremiumMemberPageState extends State<PremiumMemberPage> with SingleTicker
 
   /// tab widget controller.
   TabController _tabCtrl;
+  void _getdata() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    userId = decodedToken['_id'];
+
+    Dio dio = new Dio();
+    dio.options.headers["accesstoken"] = "$token";
+    Response response =
+    await dio.get('http://10.0.2.2:3000/premium/checklist/user/$userId', queryParameters: {
+      "date": _selectedDay
+    });
+    setState(() {
+      if(response.data['checklist'].length > 0){
+        trainerComment = response.data['checklist'][0]['trainerComment'];
+      }else{
+        setState(() {
+          trainerComment = "";
+        });
+      }
+    });
+  }
 
   @override
   void initState() {
     this._tabCtrl = TabController(vsync: this, length: 2);
     super.initState();
+    _getdata();
   }
 
   @override
@@ -34,11 +65,23 @@ class _PremiumMemberPageState extends State<PremiumMemberPage> with SingleTicker
       backgroundColor: Colors.white,
       appBar: WidgetUtils.buildAppBar(trailing: _buildNotification()),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.only(left: 32.0, right: 32.0),
         children: [
           const SizedBox(height: 8.0),
           _buildDatePicker(),
           const SizedBox(height: 24.0),
-          //트레이너 코멘트 들어가는 자리
+          Text(
+            '오늘의 코멘트',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 15.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 21.0),
+          _buildTrainerComment(),
+          const SizedBox(height: 40.0),
           Padding(
             padding: const EdgeInsets.only(left: 32.0, right: 32.0),
             child: _buildTabBar(),
@@ -54,6 +97,34 @@ class _PremiumMemberPageState extends State<PremiumMemberPage> with SingleTicker
           ),
         ],
       ),
+    );
+  }
+  Widget _buildTrainerComment() {
+    final profile = ClipOval(
+      child: Image.asset('assets/img_sample.png', fit: BoxFit.cover, width: 50.0, height: 40.0),
+    );
+
+    final message = Container(
+      padding: const EdgeInsets.fromLTRB(5.0, 16.0, 5.0, 16.0),
+      child: Text(
+        trainerComment ?? '',
+        style: TextStyle(fontSize: 12.0, height: 1.5),
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black12),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+    );
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(width: 16.0),
+        profile,
+        const SizedBox(width: 16.0),
+        Expanded(child: message),
+        const SizedBox(width: 16.0),
+      ],
     );
   }
 
