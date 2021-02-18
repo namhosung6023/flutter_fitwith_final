@@ -57,7 +57,7 @@ class _PremiumTrainerPageState extends State<PremiumTrainerPage> {
                   child: AnimatedSwitcher(
                     key: this._key,
                     duration: Duration(milliseconds: 200),
-                    child: (repository.member != null) ? TrainerManagement(repository.member) : TrainerMembers(repository),
+                    child: (repository.member != null) ? TrainerManagement(repository.member, _current) : TrainerMembers(repository),
                   ),
                 ),
               ],

@@ -5,13 +5,17 @@ import 'package:fitwith/views/premium/widgets/widget_trainer_diary.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 /// 프리미엄 - 트레이너 root 위젯.
 class TrainerManagement extends StatefulWidget {
   /// 선택된 멤버.
   final Member _member;
+  final DateTime _current;
 
-  TrainerManagement(this._member);
+  TrainerManagement(this._member, this._current);
 
   @override
   _TrainerManagementState createState() => _TrainerManagementState();
@@ -20,6 +24,21 @@ class TrainerManagement extends StatefulWidget {
 class _TrainerManagementState extends State<TrainerManagement> with SingleTickerProviderStateMixin {
   /// Tab controller.
   TabController _tabCtrl;
+  String trainerId;
+  var myControllerTrainerComment = TextEditingController();
+
+  void _trainerCommentUpload () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    Dio dio = new Dio();
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    trainerId = decodedToken['_id'];
+    dio.options.headers["accesstoken"] = "$token";
+    Response response = await dio.post('http://10.0.2.2:3000/premium/comment/trainer/$trainerId',
+    data: {"date" : (widget._current.toIso8601String()), "comment" : myControllerTrainerComment.text});
+    myControllerTrainerComment = response.data['trainerComment'][0]['comment'];
+  }
 
   @override
   void initState() {
@@ -33,21 +52,78 @@ class _TrainerManagementState extends State<TrainerManagement> with SingleTicker
       padding: const EdgeInsets.only(left: 32.0, right: 32.0),
       child: Column(
         children: [
-          _buildMemberInfo(this.widget._member),
-          const SizedBox(height: 8.0),
+          _commentTitle(),
+          const SizedBox(height: 20.0),
+          _buildComment(),
+          const SizedBox(height: 14.0),
           _buildTabBar(),
           Expanded(
             child: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               controller: this._tabCtrl,
               children: [
-                TrainerChecklist(this.widget._member),
+                TrainerChecklist(this.widget._member, this.widget._current),
                 TrainerDiary(this.widget._member),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+ ///트레이너가 코멘트 남기는 부분
+  Widget _buildComment() {
+    return TextField(
+      controller: myControllerTrainerComment,
+      onEditingComplete: (){
+        _trainerCommentUpload ();
+        print(myControllerTrainerComment.text);
+      },
+      style: TextStyle(fontSize: 13.0),
+      decoration: InputDecoration(
+        hintText: '내용을 입력하세요.',
+        isDense: true, // Added this
+        contentPadding: EdgeInsets.all(45.0),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+      ),
+    );
+  }
+
+  /// 트레이너 코멘트 위에 타이틀
+  Widget _commentTitle() {
+    return Row(
+      children: [
+        Text(
+          '오늘의 코멘트 입력하기',
+          style: TextStyle(
+            color: Colors.black38,
+            fontSize: 15.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(width: 110.0),
+        Container(
+          child: FlatButton(
+              // splashColor: Colors.transparent,
+              // highlightColor: Colors.transparent,
+              onPressed: () {
+                print('안녕');
+            //업로드 함수 넣기
+          },
+            child:
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text('저장',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: Colors.deepOrangeAccent,
+                    fontSize: 15.0,
+                  ),
+                ),
+              )
+          ),
+        )
+      ],
     );
   }
 

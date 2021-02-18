@@ -66,18 +66,20 @@ class _PremiumMemberPageState extends State<PremiumMemberPage> with SingleTicker
       appBar: WidgetUtils.buildAppBar(trailing: _buildNotification()),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        padding: const EdgeInsets.only(left: 32.0, right: 32.0),
         children: [
           const SizedBox(height: 8.0),
           _buildDatePicker(),
           const SizedBox(height: 24.0),
-          Text(
+          Container(
+            child : Text(
             '오늘의 코멘트',
             style: TextStyle(
               color: Colors.grey,
               fontSize: 15.0,
               fontWeight: FontWeight.bold,
             ),
+          ),
+            padding: const EdgeInsets.only(left: 32.0, right: 32.0),
           ),
           const SizedBox(height: 21.0),
           _buildTrainerComment(),
@@ -101,11 +103,11 @@ class _PremiumMemberPageState extends State<PremiumMemberPage> with SingleTicker
   }
   Widget _buildTrainerComment() {
     final profile = ClipOval(
-      child: Image.asset('assets/img_sample.png', fit: BoxFit.cover, width: 50.0, height: 40.0),
+      child: Image.asset('assets/img_sample.png', fit: BoxFit.cover, width: 45.0, height: 40.0),
     );
 
     final message = Container(
-      padding: const EdgeInsets.fromLTRB(5.0, 16.0, 5.0, 16.0),
+      padding: const EdgeInsets.fromLTRB(5.0, 16.0, 0.0, 10.0),
       child: Text(
         trainerComment ?? '',
         style: TextStyle(fontSize: 12.0, height: 1.5),
