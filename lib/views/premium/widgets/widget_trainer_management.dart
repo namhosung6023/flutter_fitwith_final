@@ -33,12 +33,15 @@ class _TrainerManagementState extends State<TrainerManagement> with SingleTicker
     final token = prefs.getString('token');
 
     Dio dio = new Dio();
+    print('코멘트 업로드 dio실행');
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-    trainerId = decodedToken['_id'];
-    dio.options.headers["accesstoken"] = "$token";
-    Response response = await dio.post('http://10.0.2.2:3000/premium/comment/trainer/$trainerId',
-    data: {"date" : (widget._current.toIso8601String()), "comment" : myControllerTrainerComment.text});
-    myControllerTrainerComment = response.data['trainerComment'][0]['comment'];
+    // trainerId = decodedToken['_id'];
+    trainerId = "602e0a670f0e1f2478599666";
+    String decodedToken2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDJiNzk0MjlmMDk2YjM3OTQyNDcxNzciLCJlbWFpbCI6Im1pbGtAbmF2ZXIuY29tIiwiaWF0IjoxNjEzNjMxODc4LCJleHAiOjE2Mzk1NTE4Nzh9.GeJ0AYGfzRcgVotIsTSRJDFusYoKoPiEdoeADNKynEg';
+    dio.options.headers["accesstoken"] = "$decodedToken2";
+    Response response = await dio.post('http://10.0.2.2:3000/premium/comment/update/$trainerId',
+    data: {"date" : (this.widget._current.toIso8601String()), "comment" : myControllerTrainerComment.text});
+    // myControllerTrainerComment = response.data['trainerComment'][0]['comment'];
   }
 
   @override
@@ -93,11 +96,11 @@ class _TrainerManagementState extends State<TrainerManagement> with SingleTicker
     ): Container(
       width: _deviceSize.width,
       child : Card (
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Text(myControllerTrainerComment.text),
+        child: Padding(
+          padding: EdgeInsets.all(45),
+          child: Text(myControllerTrainerComment.text),
       ),
+    ),
     );
   }
 
@@ -116,8 +119,9 @@ class _TrainerManagementState extends State<TrainerManagement> with SingleTicker
         const SizedBox(width: 170.0),
         InkWell(
           onTap: (){
-            print('ww');
+            print('저장, 수정을 누름');
             setState(() {
+              _trainerCommentUpload ();
               _isEdit = !_isEdit;
             });
             // setState(() => _trainerCommentUpload());

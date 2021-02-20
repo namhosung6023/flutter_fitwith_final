@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fitwith/utils/utils_common.dart';
 import 'package:fitwith/utils/utils_widget.dart';
 import 'package:fitwith/views/premium/models/model_checklist.dart';
@@ -18,7 +20,6 @@ class TrainerChecklist extends StatefulWidget {
 }
 
 class _TrainerChecklistState extends State<TrainerChecklist> {
-  List<Checklist> workoutlist = [];
   /// animation widget key.
   final _key = GlobalKey();
   String trainerId;
@@ -31,22 +32,25 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
     final token = prefs.getString('token');
 
     Dio dio = new Dio();
-    print('디아이오 실행');
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
     // trainerId = decodedToken['_id'];
     trainerId = "602e0a670f0e1f2478599666";
     String decodedToken2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDJiNzk0MjlmMDk2YjM3OTQyNDcxNzciLCJlbWFpbCI6Im1pbGtAbmF2ZXIuY29tIiwiaWF0IjoxNjEzNjMxODc4LCJleHAiOjE2Mzk1NTE4Nzh9.GeJ0AYGfzRcgVotIsTSRJDFusYoKoPiEdoeADNKynEg';
     dio.options.headers["accesstoken"] = "$decodedToken2";
-    print('진행중');
+
+    List<Map<String, dynamic>> workoutlist = [];
+
+    for(int i = 0; i < this.widget._member.checklist.length; i++) {
+      workoutlist.add(this.widget._member.checklist[i].toJson());
+    }
+    print(workoutlist);
     Response response = await dio.post('http://10.0.2.2:3000/premium/checklist/trainer/$trainerId',
         data: {"date" : ( this.widget._current.toIso8601String()),
           "workoutlist" : workoutlist
     });
-    print(response.data['workoutlist']);
-    print('안녕');
-    workoutlist = response.data['workoutlist'];
   }
 
+  @override
   @override
   void initState() {
     CommonUtils.setKeyboardListener(context);
@@ -225,7 +229,6 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
         });
       },
     );
-print (widget._member.checklist.length);
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -234,9 +237,13 @@ print (widget._member.checklist.length);
         // for(int i=0; i < widget._member.checklist.length; i++) {
         //   return _buildEditItem(widget._member.checklist[i]);
         // }
-        _buildEditItem(widget._member.checklist[0]),
-        _buildEditItem(widget._member.checklist[1]),
-        ...this.widget._member.checklist.map((e) {print(e.name); return _buildEditItem(e);}),
+        // _buildEditItem(widget._member.checklist[0]),
+        // _buildEditItem(widget._member.checklist[1]),
+        ...this.widget._member.checklist.map((checklist) {
+          int index = this.widget._member.checklist.indexOf(checklist);
+          // print(this.widget._member.checklist.indexOf(checklist));
+          return _buildEditItem(checklist, index);
+        }),
         // (widget._member.checklist.length > 0 ) ? ...this.widget._member.checklist.map((e) {print(e.name); return _buildEditItem(e);}) : Text ('체크리스트 없음'),
           const SizedBox(height: 16.0),
           Align(
@@ -246,6 +253,7 @@ print (widget._member.checklist.length);
           Align(
             alignment: Alignment.centerRight,
             child: WidgetUtils.buildDefaultButton('저장', () {
+              print('checklist: ${this.widget._member.checklist[0].name}');
               _getData();
               setState(() => this._isEdit = false,);
             }),
@@ -256,7 +264,8 @@ print (widget._member.checklist.length);
   }
 
   /// 편집모드 아이템 빌드.
-  Widget _buildEditItem(Checklist checklist) {
+  Widget _buildEditItem(Checklist checklist, int index) {
+    print(index);
     final nameCtrl = TextEditingController();
     final contentsCtrl = TextEditingController();
 
@@ -265,7 +274,7 @@ print (widget._member.checklist.length);
 
     final name = TextField(
       controller: nameCtrl,
-      onChanged: (String value) => checklist.name = value,
+      onChanged: (String value) => this.widget._member.checklist[index].name = value,
       style: TextStyle(fontSize: 13.0, fontWeight: FontWeight.bold, color: Colors.black54),
       decoration: InputDecoration(
         isDense: true, // Added this
@@ -276,7 +285,7 @@ print (widget._member.checklist.length);
 
     final contents = TextField(
       controller: contentsCtrl,
-      onChanged: (String value) => checklist.contents = value,
+      onChanged: (String value) => this.widget._member.checklist[index].contents = value,
       style: TextStyle(fontSize: 13.0, color: Colors.black54),
       decoration: InputDecoration(
         isDense: true, // Added this
@@ -290,7 +299,7 @@ print (widget._member.checklist.length);
       child: Checkbox(
         value: checklist.isEditable,
         visualDensity: VisualDensity.compact,
-        onChanged: (bool isChecked) => setState(() => checklist.isEditable = isChecked),
+        onChanged: (bool isChecked) => setState(() => this.widget._member.checklist[index].isEditable = isChecked),
       ),
     );
 

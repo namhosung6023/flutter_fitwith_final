@@ -13,5 +13,14 @@ class Checklist {
   ///
   bool isEditable = false;
 
+  Map<String, dynamic> toJson() =>
+      {
+        'name' : name,
+        'contents' : contents,
+        'checklistId' : checklistId,
+        'workoutId' : workoutId,
+        'isEditable' : isEditable,
+      };
+
   Checklist(this.name, this.contents, this.checklistId, this.workoutId, this.isEditable);
 }
