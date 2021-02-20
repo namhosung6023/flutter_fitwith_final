@@ -22,6 +22,7 @@ class TrainerManagement extends StatefulWidget {
 }
 
 class _TrainerManagementState extends State<TrainerManagement> with SingleTickerProviderStateMixin {
+  bool _isEdit = false;
   /// Tab controller.
   TabController _tabCtrl;
   String trainerId;
@@ -45,9 +46,12 @@ class _TrainerManagementState extends State<TrainerManagement> with SingleTicker
     this._tabCtrl = TabController(vsync: this, length: 2);
     super.initState();
   }
-
+  Size _deviceSize;
   @override
   Widget build(BuildContext context) {
+    _deviceSize = MediaQuery
+        .of(context)
+        .size;
     return Padding(
       padding: const EdgeInsets.only(left: 32.0, right: 32.0),
       child: Column(
@@ -73,7 +77,7 @@ class _TrainerManagementState extends State<TrainerManagement> with SingleTicker
   }
  ///트레이너가 코멘트 남기는 부분
   Widget _buildComment() {
-    return TextField(
+    return _isEdit ? TextField(
       controller: myControllerTrainerComment,
       onEditingComplete: (){
         _trainerCommentUpload ();
@@ -85,6 +89,14 @@ class _TrainerManagementState extends State<TrainerManagement> with SingleTicker
         isDense: true, // Added this
         contentPadding: EdgeInsets.all(45.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+      ),
+    ): Container(
+      width: _deviceSize.width,
+      child : Card (
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Text(myControllerTrainerComment.text),
       ),
     );
   }
@@ -101,28 +113,32 @@ class _TrainerManagementState extends State<TrainerManagement> with SingleTicker
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(width: 110.0),
-        Container(
-          child: FlatButton(
-              // splashColor: Colors.transparent,
-              // highlightColor: Colors.transparent,
-              onPressed: () {
-                print('안녕');
-            //업로드 함수 넣기
-          },
-            child:
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text('저장',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    color: Colors.deepOrangeAccent,
-                    fontSize: 15.0,
-                  ),
-                ),
-              )
+        const SizedBox(width: 170.0),
+        InkWell(
+          onTap: (){
+            print('ww');
+            setState(() {
+              _isEdit = !_isEdit;
+            });
+            // setState(() => _trainerCommentUpload());
+
+            },
+          child: _isEdit ? Text(
+            '저장',
+            style: TextStyle(
+              color: Colors.redAccent,
+              fontSize: 14.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ) : Text(
+            '수정',
+            style: TextStyle(
+              color: Colors.black38,
+              fontSize: 14.0,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        )
+        ),
       ],
     );
   }

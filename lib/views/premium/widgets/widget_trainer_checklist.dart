@@ -21,7 +21,7 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
   List<Checklist> workoutlist = [];
   /// animation widget key.
   final _key = GlobalKey();
-  String userId;
+  String trainerId;
 
   /// 수정 여부.
   bool _isEdit = false;
@@ -31,17 +31,20 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
     final token = prefs.getString('token');
 
     Dio dio = new Dio();
+    print('디아이오 실행');
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-    // userId = decodedToken['_id'];
-    userId = "602de2759734b63b18d8d33c";
-    // decodedToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDJiNzk0MjlmMDk2YjM3OTQyNDcxNzciLCJlbWFpbCI6Im1pbGtAbmF2ZXIuY29tIiwiaWF0IjoxNjEzNjMxODc4LCJleHAiOjE2Mzk1NTE4Nzh9.GeJ0AYGfzRcgVotIsTSRJDFusYoKoPiEdoeADNKynEg;
-    dio.options.headers["accesstoken"] = "$token";
-    Response response = await dio.post('http://10.0.2.2:3000/premium/checklist/trainer/$userId',
+    // trainerId = decodedToken['_id'];
+    trainerId = "602e0a670f0e1f2478599666";
+    String decodedToken2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDJiNzk0MjlmMDk2YjM3OTQyNDcxNzciLCJlbWFpbCI6Im1pbGtAbmF2ZXIuY29tIiwiaWF0IjoxNjEzNjMxODc4LCJleHAiOjE2Mzk1NTE4Nzh9.GeJ0AYGfzRcgVotIsTSRJDFusYoKoPiEdoeADNKynEg';
+    dio.options.headers["accesstoken"] = "$decodedToken2";
+    print('진행중');
+    Response response = await dio.post('http://10.0.2.2:3000/premium/checklist/trainer/$trainerId',
         data: {"date" : ( this.widget._current.toIso8601String()),
-          "checkList" : workoutlist
+          "workoutlist" : workoutlist
     });
-    print(response.data['checklist'][0]['workoutlist']);
-    workoutlist = response.data['checklist'][0]['workoutlist'];
+    print(response.data['workoutlist']);
+    print('안녕');
+    workoutlist = response.data['workoutlist'];
   }
 
   @override
@@ -222,13 +225,19 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
         });
       },
     );
-
+print (widget._member.checklist.length);
     return SizedBox(
       width: double.infinity,
       child: Column(
         children: [
           const SizedBox(height: 16.0),
-          ...this.widget._member.checklist.map((e) => _buildEditItem(e)),
+        // for(int i=0; i < widget._member.checklist.length; i++) {
+        //   return _buildEditItem(widget._member.checklist[i]);
+        // }
+        _buildEditItem(widget._member.checklist[0]),
+        _buildEditItem(widget._member.checklist[1]),
+        ...this.widget._member.checklist.map((e) {print(e.name); return _buildEditItem(e);}),
+        // (widget._member.checklist.length > 0 ) ? ...this.widget._member.checklist.map((e) {print(e.name); return _buildEditItem(e);}) : Text ('체크리스트 없음'),
           const SizedBox(height: 16.0),
           Align(
             alignment: Alignment.center,
