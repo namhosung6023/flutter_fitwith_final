@@ -77,7 +77,7 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
           child: Text(
             '운동',
             style: TextStyle(
-              color: Colors.grey,
+              color: Colors.black38,
               fontSize: 17.0,
               fontWeight: FontWeight.bold,
             ),
@@ -91,49 +91,6 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
       ],
     );
   }
-
-  /// 코멘트 필드 빌드.
-  // Widget _buildComment() {
-  //   return TextField(
-  //     enabled: this._isEdit,
-  //     style: TextStyle(fontSize: 13.0),
-  //     decoration: InputDecoration(
-  //       isDense: true, // Added this
-  //       contentPadding: EdgeInsets.all(16.0),
-  //       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
-  //     ),
-  //   );
-  // }
-
-  /// 회원의 메세지 위젯 빌드.
-  // Widget _buildMemberComment(Member target) {
-  //   final profile = ClipOval(
-  //     child: Image.asset(target.url, fit: BoxFit.cover, width: 40.0, height: 40.0),
-  //   );
-  //
-  //   final message = Container(
-  //     padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
-  //     child: Text(
-  //       'message message message message message message message message ',
-  //       style: TextStyle(fontSize: 12.0, height: 1.5),
-  //     ),
-  //     decoration: BoxDecoration(
-  //       border: Border.all(color: Colors.black12),
-  //       borderRadius: BorderRadius.circular(8.0),
-  //     ),
-  //   );
-  //
-  //   return Row(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       const SizedBox(width: 16.0),
-  //       profile,
-  //       const SizedBox(width: 16.0),
-  //       Expanded(child: message),
-  //       const SizedBox(width: 16.0),
-  //     ],
-  //   );
-  // }
 
   /// 뷰어 모드.
   Widget _buildViewMode() {
@@ -194,10 +151,6 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(width: 16.0),
-            Padding(
-              padding: const EdgeInsets.only(top: 6.0),
-              child: Image.asset('assets/ic_dumbbell.png', width: 32.0, fit: BoxFit.cover),
-            ),
             const SizedBox(width: 24.0),
             Expanded(
               child: Column(
@@ -266,11 +219,11 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
   /// 편집모드 아이템 빌드.
   Widget _buildEditItem(Checklist checklist, int index) {
     print(index);
-    final nameCtrl = TextEditingController();
-    final contentsCtrl = TextEditingController();
+    final nameCtrl = TextEditingController(text: '내용을 입력해주세요.');
+    final contentsCtrl = TextEditingController(text: '내용을 입력해주세요');
 
-    if (checklist.name != null) nameCtrl.text = checklist.name;
-    if (checklist.contents != null) contentsCtrl.text = checklist.contents;
+    // if (checklist.name != null) nameCtrl.text = checklist.name;
+    // if (checklist.contents != null) contentsCtrl.text = checklist.contents;
 
     final name = TextField(
       controller: nameCtrl,
@@ -289,7 +242,7 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
       style: TextStyle(fontSize: 13.0, color: Colors.black54),
       decoration: InputDecoration(
         isDense: true, // Added this
-        contentPadding: EdgeInsets.all(8.0),
+        contentPadding: EdgeInsets.all(30.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(6.0)),
       ),
     );
@@ -309,11 +262,10 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(width: 16.0),
-            Padding(
-              padding: const EdgeInsets.only(top: 6.0),
-              child: Image.asset('assets/ic_dumbbell.png', width: 32.0, fit: BoxFit.cover),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.only(top: 6.0),
+            //   child: Image.asset('assets/ic_dumbbell.png', width: 32.0, fit: BoxFit.cover),
+            // ),
             const SizedBox(width: 16.0),
             Expanded(
               child: Column(

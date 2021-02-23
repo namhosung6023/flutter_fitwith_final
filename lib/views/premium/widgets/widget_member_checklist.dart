@@ -162,90 +162,6 @@ class _MemberChecklistState extends State<MemberChecklist> {
   }
 
 
-  /// 회원의 메세지 위젯 빌드.
-  Widget _buildTrainerComment() {
-    final profile = ClipOval(
-      child: Image.asset('assets/img_sample.png', fit: BoxFit.cover, width: 50.0, height: 40.0),
-    );
-
-    final message = Container(
-      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
-      child: Text(
-        trainerComment ?? '',
-        style: TextStyle(fontSize: 12.0, height: 1.5),
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-    );
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(width: 16.0),
-        profile,
-        const SizedBox(width: 16.0),
-        Expanded(child: message),
-        const SizedBox(width: 16.0),
-      ],
-    );
-  }
-
-  Widget _buildUserComment(commentList) {
-    final message = Container(
-      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
-      child: Text(
-        commentList ?? '',
-        style: TextStyle(fontSize: 12.0, height: 1.5),
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-    );
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(width: 16.0),
-        Expanded(child: message),
-        const SizedBox(width: 16.0),
-        // profile,
-        const SizedBox(width: 16.0),
-      ],
-    );
-  }
-
-
-  Widget _buildTextComposer() {
-    return IconTheme(
-      data: IconThemeData(color: Theme.of(context).accentColor),
-      child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                child: TextField(
-                  style: TextStyle(fontSize: 13),
-                  controller: _textController,
-                  decoration:
-                  InputDecoration(hintText: "트레이너에게 코멘트 남기기"),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: () => _postUserComment(_textController.text)),
-              ),
-            ],
-          )),
-    );
-  }
-
-
-  ///
   Widget _buildChecklistItem(Checklist checklist) {
     final color = (checklist.isEditable) ? CommonUtils.getPrimaryColor() : Colors.black54;
 
@@ -281,7 +197,7 @@ class _MemberChecklistState extends State<MemberChecklist> {
             const SizedBox(width: 16.0),
             Padding(
               padding: const EdgeInsets.only(top: 6.0),
-              child: Image.asset('assets/ic_dumbbell.png', width: 32.0, fit: BoxFit.cover),
+              // child: Image.asset('assets/ic_dumbbell.png', width: 32.0, fit: BoxFit.cover),
             ),
             const SizedBox(width: 24.0),
             Expanded(

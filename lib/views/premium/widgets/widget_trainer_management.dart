@@ -46,6 +46,7 @@ class _TrainerManagementState extends State<TrainerManagement> with SingleTicker
 
   @override
   void initState() {
+    _commentTitle();
     this._tabCtrl = TabController(vsync: this, length: 2);
     super.initState();
   }
@@ -89,7 +90,7 @@ class _TrainerManagementState extends State<TrainerManagement> with SingleTicker
       style: TextStyle(fontSize: 13.0),
       decoration: InputDecoration(
         hintText: '내용을 입력하세요.',
-        isDense: true, // Added this
+        isDense: true,
         contentPadding: EdgeInsets.all(45.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
       ),

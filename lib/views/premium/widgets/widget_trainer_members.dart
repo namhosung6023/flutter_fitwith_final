@@ -55,23 +55,23 @@ class _TrainerMembersState extends State<TrainerMembers> {
         const SizedBox(height: 24.0),
         _buildPageCtrl(),
         const SizedBox(height: 64.0),
-        Text(
-          '회원 타임라인',
-          style: TextStyle(
-            color: Color(0xff222224),
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16.0),
-        ...ListTile.divideTiles(
-          context: context,
-          tiles: [
-            _buildMemberHistory(this._temporary[0]),
-            _buildMemberHistory(this._temporary[1]),
-            _buildMemberHistory(this._temporary[2]),
-          ],
-        ),
+        // Text(
+        //   '회원 타임라인',
+        //   style: TextStyle(
+        //     color: Color(0xff222224),
+        //     fontSize: 18.0,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        // ),
+        // const SizedBox(height: 16.0),
+        // ...ListTile.divideTiles(
+        //   context: context,
+        //   tiles: [
+        //     _buildMemberHistory(this._temporary[0]),
+        //     _buildMemberHistory(this._temporary[1]),
+        //     _buildMemberHistory(this._temporary[2]),
+        //   ],
+        // ),
         const SizedBox(height: 16.0),
       ],
     );
@@ -112,7 +112,6 @@ class _TrainerMembersState extends State<TrainerMembers> {
         children: [
           name,
           const SizedBox(width: 12.0),
-          notification,
         ],
       ),
       trailing: info,
@@ -120,52 +119,52 @@ class _TrainerMembersState extends State<TrainerMembers> {
   }
 
   /// 회원 타임라인 이력 위젯 빌드.
-  Widget _buildMemberHistory(Member member) {
-    // 사진.
-    final profile = ClipOval(
-      child: Image.asset(member.url, fit: BoxFit.cover, width: 40.0, height: 40.0),
-    );
-
-    final message = RichText(
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-      text: TextSpan(
-        style: TextStyle(fontSize: 13.0, color: Colors.black),
-        children: [
-          TextSpan(
-            text: member.name,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          TextSpan(text: ' 님의 Message message message'),
-        ],
-      ),
-    );
-
-    // 시간.
-    final date = Text(
-      '07:23',
-      textAlign: TextAlign.end,
-      style: TextStyle(fontSize: 13.0),
-    );
-
-    // 정보.
-    final info = Text(
-      '48.3Kg',
-      style: TextStyle(
-        color: Colors.grey,
-        fontSize: 18.0,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-
-    return ListTile(
-      leading: profile,
-      title: message,
-      isThreeLine: true,
-      subtitle: date,
-      trailing: info,
-    );
-  }
+  // Widget _buildMemberHistory(Member member) {
+  //   // 사진.
+  //   final profile = ClipOval(
+  //     child: Image.asset(member.url, fit: BoxFit.cover, width: 40.0, height: 40.0),
+  //   );
+  //
+  //   final message = RichText(
+  //     maxLines: 2,
+  //     overflow: TextOverflow.ellipsis,
+  //     text: TextSpan(
+  //       style: TextStyle(fontSize: 13.0, color: Colors.black),
+  //       children: [
+  //         TextSpan(
+  //           text: member.name,
+  //           style: TextStyle(fontWeight: FontWeight.bold),
+  //         ),
+  //         TextSpan(text: ' 님의 Message message message'),
+  //       ],
+  //     ),
+  //   );
+  //
+  //   // 시간.
+  //   final date = Text(
+  //     '07:23',
+  //     textAlign: TextAlign.end,
+  //     style: TextStyle(fontSize: 13.0),
+  //   );
+  //
+  //   // 정보.
+  //   final info = Text(
+  //     '48.3Kg',
+  //     style: TextStyle(
+  //       color: Colors.grey,
+  //       fontSize: 18.0,
+  //       fontWeight: FontWeight.bold,
+  //     ),
+  //   );
+  //
+  //   return ListTile(
+  //     leading: profile,
+  //     title: message,
+  //     isThreeLine: true,
+  //     subtitle: date,
+  //     trailing: info,
+  //   );
+  // }
 
   /// 리스트 인디케이터 빌드.
   List<Widget> _buildIndicator() {

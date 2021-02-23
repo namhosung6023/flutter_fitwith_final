@@ -1,7 +1,7 @@
 class Checklist {
 
   /// 이름.
-  String name;
+  String name  ;
 
   /// 내용.
   String contents;
