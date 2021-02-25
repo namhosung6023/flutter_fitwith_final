@@ -219,11 +219,11 @@ class _TrainerChecklistState extends State<TrainerChecklist> {
   /// 편집모드 아이템 빌드.
   Widget _buildEditItem(Checklist checklist, int index) {
     print(index);
-    final nameCtrl = TextEditingController(text: '내용을 입력해주세요.');
-    final contentsCtrl = TextEditingController(text: '내용을 입력해주세요');
+    final nameCtrl = TextEditingController();
+    final contentsCtrl = TextEditingController();
 
-    // if (checklist.name != null) nameCtrl.text = checklist.name;
-    // if (checklist.contents != null) contentsCtrl.text = checklist.contents;
+    if (checklist.name != null) nameCtrl.text = checklist.name;
+    if (checklist.contents != null) contentsCtrl.text = checklist.contents;
 
     final name = TextField(
       controller: nameCtrl,

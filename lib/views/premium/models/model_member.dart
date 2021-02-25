@@ -21,6 +21,10 @@ class Member {
   /// 프로필 사진.
   String url = 'assets/img_sample.png';
 
+  DateTime startDate = DateTime.now();
+  DateTime endDate = DateTime.now();
+  int alarmCount = 0;
+
   /// 체크리스트.
   List<Checklist> checklist = [];
 

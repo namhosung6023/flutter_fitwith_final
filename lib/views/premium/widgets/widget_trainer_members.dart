@@ -2,6 +2,9 @@ import 'package:fitwith/utils/utils_widget.dart';
 import 'package:fitwith/views/premium/models/model_member.dart';
 import 'package:fitwith/views/premium/repositories/repository_premium.dart';
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
 
 /// 회원 목록 위젯.
 class TrainerMembers extends StatefulWidget {
@@ -15,6 +18,61 @@ class TrainerMembers extends StatefulWidget {
 }
 
 class _TrainerMembersState extends State<TrainerMembers> {
+  int page = 1;
+  String username = '';
+  List<Member> _memberList = [];
+  bool _loading = true;
+
+  String userId;
+
+  ///회원리스트 불러오는 api
+  // _getMember() {
+  //   http.get('http://10.0.2.2/premium/userlist/$userId').then((response) {
+  //     print(response.body[0]);
+      // if (response.statusCode == 200) {
+      //   String jsonString = response.body;
+      //
+      //   List data = jsonDecode(jsonString);
+      //   for (int i = 0;  data[0]['user']['username'].length >0 ; i++) {
+      //     var usernameList = data[i];
+      //     print(data.length);
+      //
+      //     setState(() {
+      //       usernameList.add(data[i]['user']['username']);
+      //       page++;
+      //     });
+      //   }
+      // }else {
+      //   print('err');
+      // }
+  //   }
+  //   );
+  // }
+   void _getMember() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    // userId = decodedToken['_id'];
+    userId =  "602b7cef9f096b3794247178";
+    String decodedToken2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDJiNzk0MjlmMDk2YjM3OTQyNDcxNzciLCJlbWFpbCI6Im1pbGtAbmF2ZXIuY29tIiwiaWF0IjoxNjEzNjMxODc4LCJleHAiOjE2Mzk1NTE4Nzh9.GeJ0AYGfzRcgVotIsTSRJDFusYoKoPiEdoeADNKynEg';
+    Dio dio = new Dio();
+    dio.options.headers["accesstoken"] = "$decodedToken2";
+
+    Response response = await  dio.get('http://10.0.2.2:3000/premium/userlist/$userId');
+    print(response.data['data'][0]);
+    if (response.data['data'].length > 0 )
+    setState(() {
+      if (response.data['data'][0]['user']['username'].length > 0) {
+        for(int i = 0; i < response.data['data'].length; i++) {
+          Member _member = Member(response.data['data'][i]['user']['username'], response.data['data'][i]['user']['gender'], response.data['data'][i]['user']['age']);
+          _memberList.add(_member);
+        }
+      }
+    });
+    _loading = false;
+  }
+
   /// 한 페이지에 그려질 아이템 개 수.
   static const int _LIMIT = 7;
 
@@ -25,8 +83,15 @@ class _TrainerMembersState extends State<TrainerMembers> {
   var _index = 0;
 
   @override
+  void initState() {
+    _getMember();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ListView(
+    _getMember();
+    return _loading ? Container() : ListView(
       padding: const EdgeInsets.only(left: 32.0, right: 32.0),
       children: [
         Text(
@@ -48,12 +113,13 @@ class _TrainerMembersState extends State<TrainerMembers> {
           ),
         ),
         const SizedBox(height: 16.0),
-        ...ListTile.divideTiles(
-          context: context,
-          tiles: _buildMembers(),
-        ),
+        // ...ListTile.divideTiles(
+        //   context: context,
+        //   tiles: _buildMembers(),
+        // ),
+        ..._buildMembers(),
         const SizedBox(height: 24.0),
-        _buildPageCtrl(),
+        // _buildPageCtrl(),
         const SizedBox(height: 64.0),
         // Text(
         //   '회원 타임라인',
@@ -78,27 +144,21 @@ class _TrainerMembersState extends State<TrainerMembers> {
   }
 
   /// 회원 목록 아이템 위젯 빌드.
-  Widget _buildMemberItem(Member member) {
-    // 프로필 사진.
+  Widget _buildMemberItem(Member member, int index) {
+    //프로필 사진.
     final profile = ClipOval(
       child: Image.asset(member.url, fit: BoxFit.cover, width: 40.0, height: 40.0),
     );
 
     // 이름.
     final name = Text(
-      member.name,
+      _memberList[index].name,
       style: TextStyle(fontSize: 18.0),
-    );
-
-    // 알람.
-    final notification = Padding(
-      padding: const EdgeInsets.only(bottom: 4.0),
-      child: WidgetUtils.buildNotificationIcon(isNew: true),
     );
 
     // 성별 및 나이.
     final info = Text(
-      '${(member.gender == Member.FEMALE) ? '여' : '남'}, ${member.age}세',
+      '${_memberList[index].gender}, ${_memberList[index].age}세',
       style: TextStyle(fontSize: 17.0),
     );
 
@@ -188,11 +248,16 @@ class _TrainerMembersState extends State<TrainerMembers> {
       final index = (this._index * _LIMIT) + i;
       if (this._temporary.length > index) {
         final target = this._temporary[index];
-        result.add(_buildMemberItem(target));
+        result.add(_buildMemberItem(target, index));
       }
     }
     return result;
   }
+  // List<Widget> _buildMembers() {
+  //   final List<Widget> result = [];
+  //       result.add(_buildMemberItem(target, index));
+  //   return result;
+  // }
 
   /// 페이지 컨트롤러 빌드.
   Widget _buildPageCtrl() {
