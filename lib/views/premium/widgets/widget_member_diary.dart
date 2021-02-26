@@ -511,7 +511,7 @@ class _MemberDiaryState extends State<MemberDiary> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30.0)),
               ),
-              backgroundColor: Colors.blue,
+              backgroundColor: Colors.white,
               context: context,
               builder: ((builder) => bottomSheet()));
           _pictureNumber = pictureNumber;
@@ -907,7 +907,7 @@ class _MemberDiaryState extends State<MemberDiary> {
                       height: MediaQuery.of(context).size.height*0.30,
                       width: MediaQuery.of(context).size.width,
                       child: Card(
-                        color: Colors.blueAccent,
+                        color: Colors.white,
                         child: imageUrlWidget,
                       ),
                     );
@@ -919,10 +919,11 @@ class _MemberDiaryState extends State<MemberDiary> {
       ),
       onTap: () {
         showModalBottomSheet(
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(30.0)),
             ),
-            backgroundColor: Colors.blue,
+            // backgroundColor: Colors.white,
             context: context,
             builder: ((builder) => bottomSheet()));
         _pictureNumber = pictureNumber;
@@ -997,53 +998,33 @@ class _MemberDiaryState extends State<MemberDiary> {
   ///사진과 겔러리 선택 하단바
   Widget bottomSheet() {
     return Container(
-        height: 100,
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+        height: 170,
+        width: 100,
+        margin: EdgeInsets.fromLTRB(0,10,0,0),
         child: Column(
           children: <Widget>[
-            Text(
-              '선택하세요',
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.white,
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                FlatButton.icon(
-                  icon: Icon(
-                    Icons.camera_alt,
-                    size: 20,
-                    color: Colors.white,
-                  ),
+                FlatButton(
+                  child: Text('Camera',
+                    style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w400),),
                   onPressed: () {
                     cameraImage();
                     Navigator.pop(context);
                   },
-                  label: Text(
-                    'Camera',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
                 ),
-                FlatButton.icon(
-                  icon: Icon(
-                    Icons.photo_library,
-                    size: 23,
-                    color: Colors.white,
-                  ),
+                const SizedBox(height: 8.0),
+                Container( height: 0.5, width: 500.0, color: Colors.black12,),
+                const SizedBox(height: 8.0),
+                FlatButton(
+                  child: Text('Gallery',
+                    style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w400),) ,
                   onPressed: () {
                     galleryImage();
                     Navigator.pop(context);
                   },
-                  label: Text(
-                    'Gallery',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
+
                 )
               ],
             )
