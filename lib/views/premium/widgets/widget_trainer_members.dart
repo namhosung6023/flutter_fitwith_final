@@ -27,45 +27,45 @@ class _TrainerMembersState extends State<TrainerMembers> {
 
   String userId;
 
-  ///회원리스트 불러오는 api
-  void _getMember() async {
-    print('안녕');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-
-    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-    // userId = decodedToken['_id'];
-    userId = "602b7cef9f096b3794247178";
-    String decodedToken2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDJiNzk0MjlmMDk2YjM3OTQyNDcxNzciLCJlbWFpbCI6Im1pbGtAbmF2ZXIuY29tIiwiaWF0IjoxNjEzNjMxODc4LCJleHAiOjE2Mzk1NTE4Nzh9.GeJ0AYGfzRcgVotIsTSRJDFusYoKoPiEdoeADNKynEg';
-    Dio dio = new Dio();
-    dio.options.headers["accesstoken"] = "$decodedToken2";
-
-    Response response = await dio.get(
-      djfksfsksjfjsdafsakjffajskh
-        'http://10.0.2.2:3000/premium/userlist/$userId');
-    print(response.data['data'][0]);
-    if (response.data['data'].length > 0)
-      setState(() {
-        if (response.data['data'][0]['user']['username'].length > 0) {
-          for (int i = 0; i < response.data['data'].length; i++) {
-            Member _member = Member(
-                response.data['data'][i]['user']['username'],
-                response.data['data'][i]['user']['gender'],
-                response.data['data'][i]['user']['age']);
-            _memberList.add(_member);
-          }
-          if (response.data['data'][0]['user']['username'].length > 0){
-            for(int i = 0; i < response.data['data'].length; i++) {
-              Member _member = Member (
-                response.data['data'][i]['user']['profileImages']);
-              _memberList.add(_member);
-            }
-          }
-        }
-        print('dfaf');
-      });
-    _loading = false;
-  }
+  // ///회원리스트 불러오는 api
+  // void _getMember() async {
+  //   print('안녕');
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   final token = prefs.getString('token');
+  //
+  //   Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+  //   // userId = decodedToken['_id'];
+  //   userId = "602b7cef9f096b3794247178";
+  //   String decodedToken2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDJiNzk0MjlmMDk2YjM3OTQyNDcxNzciLCJlbWFpbCI6Im1pbGtAbmF2ZXIuY29tIiwiaWF0IjoxNjEzNjMxODc4LCJleHAiOjE2Mzk1NTE4Nzh9.GeJ0AYGfzRcgVotIsTSRJDFusYoKoPiEdoeADNKynEg';
+  //   Dio dio = new Dio();
+  //   dio.options.headers["accesstoken"] = "$decodedToken2";
+  //
+  //   Response response = await dio.get(
+  //     djfksfsksjfjsdafsakjffajskh
+  //       'http://10.0.2.2:3000/premium/userlist/$userId');
+  //   print(response.data['data'][0]);
+  //   if (response.data['data'].length > 0)
+  //     setState(() {
+  //       if (response.data['data'][0]['user']['username'].length > 0) {
+  //         for (int i = 0; i < response.data['data'].length; i++) {
+  //           Member _member = Member(
+  //               response.data['data'][i]['user']['username'],
+  //               response.data['data'][i]['user']['gender'],
+  //               response.data['data'][i]['user']['age']);
+  //           _memberList.add(_member);
+  //         }
+  //         if (response.data['data'][0]['user']['username'].length > 0){
+  //           for(int i = 0; i < response.[data'data'].length; i++) {
+  //             Member _member = Member (
+  //               response.data['data'][i]['user']['profileImages']);
+  //             _memberList.add(_member);
+  //           }
+  //         }
+  //       }
+  //       print('dfaf');
+  //     });
+  //   _loading = false;
+  // }
 
   /// 한 페이지에 그려질 아이템 개 수.
   // static const int _LIMIT = 7;
@@ -79,7 +79,7 @@ class _TrainerMembersState extends State<TrainerMembers> {
 
   @override
   void initState() {
-    _getMember();
+    // _getMember();
     super.initState();
   }
 
