@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:fitwith/utils/utils_common.dart';
 import 'package:fitwith/utils/utils_widget.dart';
 import 'package:fitwith/views/premium/models/model_checklist.dart';
@@ -19,7 +18,7 @@ class TrainerChecklist extends StatefulWidget {
   _TrainerChecklistState createState() => _TrainerChecklistState();
 }
 
-class _TrainerChecklistState extends State<TrainerChecklist> {
+  class _TrainerChecklistState extends State<TrainerChecklist> {
   /// animation widget key.
   final _key = GlobalKey();
   String trainerId;

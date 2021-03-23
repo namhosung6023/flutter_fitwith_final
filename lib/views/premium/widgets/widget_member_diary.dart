@@ -1019,7 +1019,7 @@ class _MemberDiaryState extends State<MemberDiary> {
                 const SizedBox(height: 8.0),
                 FlatButton(
                   child: Text('Gallery',
-                    style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w400),) ,
+                    style: TextStyle(fontSize: 18, color: Colors.blueAccent, fontWeight: FontWeight.w400),) ,
                   onPressed: () {
                     galleryImage();
                     Navigator.pop(context);
